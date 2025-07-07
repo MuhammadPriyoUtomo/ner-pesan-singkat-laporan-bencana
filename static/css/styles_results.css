@@ -1,0 +1,28 @@
+table.table {
+    font-size: 0.95rem;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+table th,
+table td {
+    vertical-align: middle;
+}
+
+.table thead th {
+    background-color: #e9ecef;
+}
+
+.disaster {
+    background-color: #b86cff;
+}
+
+.location {
+    background-color: #17a2b8;
+}
+
+.badge-label {
+    font-size: 1rem;
+    padding: 0.4em 0.6em;
+    border-radius: 0.5rem;
+}

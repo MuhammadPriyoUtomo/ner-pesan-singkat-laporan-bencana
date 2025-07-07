@@ -1,0 +1,383 @@
+/* Atur font-weight default untuk semua elemen teks */
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+a,
+li,
+button,
+input,
+textarea {
+  font-weight: 500 !important;
+  /* Medium weight */
+}
+
+.pulser-container {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.pulser {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  position: relative;
+  margin: 20px auto;
+  z-index: 1051;
+  /* Lebih tinggi dari modal */
+}
+
+.pulser-1 {
+  background: red;
+}
+
+.pulser-2 {
+  background: orange;
+}
+
+.pulser-3 {
+  background: green;
+}
+
+.pulser-4 {
+  background: blue;
+}
+
+.pulser::before,
+.pulser::after {
+  content: '';
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  z-index: 1050;
+  /* Lebih tinggi dari modal */
+  opacity: 0.7;
+  animation: pulse 1000ms cubic-bezier(0.9, 0.7, 0.5, 0.9) infinite;
+}
+
+.pulser-1::before,
+.pulser-1::after {
+  animation-delay: 0ms;
+  background: red;
+}
+
+.pulser-2::before,
+.pulser-2::after {
+  animation-delay: 250ms;
+  background: orange;
+}
+
+.pulser-3::before,
+.pulser-3::after {
+  animation-delay: 500ms;
+  background: green;
+}
+
+.pulser-4::before,
+.pulser-4::after {
+  animation-delay: 750ms;
+  background: blue;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.modal_footer_body {
+  height: 53vh;
+  /* Tinggi modal 50% dari viewport */
+  overflow-y: auto;
+  /* Menampilkan scrolling */
+}
+
+#search-results .list-group-item:nth-child(even) {
+  background-color: #f8f9fa;
+  /* Warna latar belakang untuk baris genap */
+}
+
+#search-results .list-group-item:hover {
+  background-color: #28a745;
+  /* Warna hijau */
+  color: white;
+  /* Opsional: Ubah warna teks menjadi putih agar lebih kontras */
+}
+
+#search-results .list-group-item {
+  border-bottom: 1px solid #28a745;
+  /* Warna hijau untuk pembatas antar baris */
+}
+
+/* Default highlight */
+.search-highlight {
+  background-color: #28a745;
+  color: white;
+  font-weight: bold;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  border-radius: 3px;
+}
+
+/* Saat baris di-hover, ubah warna highlight agar tetap kontras */
+#search-results .list-group-item:hover .search-highlight {
+  background-color: #ffc107 !important;
+  /* kuning terang */
+  color: black !important;
+}
+
+.table-inner-hide thead {
+  display: table-row-group;
+  height: 0 !important;
+  visibility: collapse !important;
+}
+
+.table-inner-hide thead tr,
+.table-inner-hide thead th {
+  height: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  visibility: collapse !important;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.form-blink {
+  animation: blink 1s linear infinite;
+}
+
+#program-list {
+  list-style-type: none;
+  /* Menghilangkan bullet points */
+  padding-left: 0;
+  /* Menghilangkan padding default */
+  margin: 0;
+  /* Menghilangkan margin default */
+}
+
+#requirements-list {
+  list-style-type: none;
+  /* Menghilangkan bullet points */
+  padding-left: 0;
+  /* Menghilangkan padding default */
+  margin: 0;
+  /* Menghilangkan margin default */
+}
+
+.profile-item {
+  display: flex;
+  /* Mengatur elemen dalam satu baris */
+  margin-bottom: 5px;
+  /* Memberikan jarak antar baris */
+
+  border: 1px solid #ddd;
+  /* Warna outline */
+  padding: 5px;
+  /* Tambahkan padding untuk jarak */
+  border-radius: 5px;
+  /* Opsional: Membuat sudut outline melengkung */
+  background-color: #f9f9f9;
+  /* Opsional: Warna latar belakang untuk elemen genap */
+  align-items: center;
+  /* Menyelaraskan elemen secara vertikal */
+  gap: 10px;
+  /* Memberikan jarak antara label dan nilai */
+}
+
+.profile-label {
+  flex: 0 0 150px;
+  /* Memberikan lebar tetap untuk label */
+  text-align: right;
+  /* Menyelaraskan teks ke kanan */
+  padding-right: 10px;
+  /* Memberikan jarak antara label dan nilai */
+}
+
+.profile-value {
+  flex: 1;
+  /* Membuat nilai menyesuaikan lebar kontainer */
+  text-align: left;
+  /* Menyelaraskan teks ke kiri */
+}
+
+.outline-box {
+  border: 1px solid #ddd;
+  /* Warna outline */
+  padding: 10px;
+  /* Jarak di dalam kotak */
+  margin-bottom: 10px;
+  /* Jarak antar kotak */
+  border-radius: 5px;
+  /* Membuat sudut outline melengkung */
+  background-color: #f9f9f9;
+  /* Warna latar belakang */
+}
+
+.centered-title {
+  text-align: center;
+  /* Memastikan teks berada di tengah secara horizontal */
+  margin-bottom: 10px;
+  /* Memberikan jarak bawah untuk estetika */
+  font-weight: bold;
+  /* Membuat teks lebih tebal */
+}
+
+.nav_proj_act {
+  color: white !important;
+  /* Warna teks putih untuk elemen tidak aktif */
+  opacity: 1;
+  /* Sedikit transparan untuk elemen tidak aktif */
+}
+
+.nav_proj_act.disabled {
+  opacity: 0.5 !important;
+  /* Transparansi untuk elemen disabled */
+}
+
+.nav-tabs .nav-link.active {
+  border: 2px solid green;
+  /* Border hijau */
+  color: white;
+}
+
+.nav_proj_act.active {
+  background-color: white;
+  /* Latar belakang putih */
+  -webkit-text-fill-color: green;
+  /* Warna teks hijau */
+  border-radius: 5px;
+  /* Opsional: Tambahkan border-radius untuk tampilan lebih halus */
+}
+
+.pagination {
+  margin: 0;
+}
+
+/* Container utama pagination */
+.custom_pagination {
+  /* min-width: 222.2px; */
+
+  max-width: 100%;
+  background: #e9ecef;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  /* ⬅ untuk menangani data besar agar scroll horizontal */
+}
+
+.custom_pagination_right_left {
+  height: 40px;
+  display: flex;
+  align-items: center;
+}
+
+.custom_pagination_right_left_a {
+  height: 40px;
+}
+
+/* .custom_pagination_right_left_a_next {
+  border-left: 1px solid #dee2e6;
+} */
+
+.custom_pagination_form_span {
+  display: flex;
+  align-items: center;
+  /* margin-bottom: 1px; */
+}
+
+/* Form sebagai flex container */
+.custom_pagination_form {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  width: 100%;
+  flex-wrap: nowrap;
+  padding: 0;
+  margin: 0;
+}
+
+/* Elemen kiri: Page [input] of X */
+.pagination_input_group {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  /* penting untuk memungkinkan fleksibilitas */
+  flex-grow: 1;
+  flex-shrink: 1;
+  border-top: 1px solid #dee2e6;
+  border-bottom: 1px solid #dee2e6;
+  border-right: 1px solid #dee2e6;
+  /* padding: 0 6px; */
+  padding-right: 6px;
+  padding-left: 6px;
+  white-space: nowrap;
+  /* ⬅ jaga agar tidak wrap ke bawah */
+  margin: 0;
+  height: 40px;
+}
+
+/* Input untuk nomor halaman */
+.form_input_pagination {
+  min-width: 40px;
+  max-width: 100%;
+  height: 38px;
+  /* atau sesuai tinggi parent */
+  line-height: 38px;
+  /* Samakan dengan height */
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  text-align: center;
+  /* Hapus flex karena tidak berpengaruh */
+}
+
+/* Chrome, Safari, Edge */
+.form_input_pagination::-webkit-outer-spin-button,
+.form_input_pagination::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Tombol Go */
+.pagination_submit_button {
+  width: 46.72px;
+  /* width: 40px; */
+  /* max-width: 100%; */
+  height: 40px;
+  border-radius: 0;
+  border: 1px solid #0d6efd;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-right: 1px;
+  padding-bottom: 8px;
+}

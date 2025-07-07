@@ -1,0 +1,19 @@
+table.table {
+    font-size: 0.95rem;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+table th,
+table td {
+    vertical-align: middle;
+}
+
+.table thead th {
+    background-color: #e9ecef;
+}
+
+.highlight {
+    background-color: yellow;
+    transition: background-color 0.5s ease;
+}

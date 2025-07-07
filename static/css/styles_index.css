@@ -1,0 +1,52 @@
+
+h1.text-primary {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+h3.text-success {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+}
+
+table.table {
+    font-size: 0.95rem;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+table th,
+table td {
+    vertical-align: middle;
+}
+
+.table thead th {
+    background-color: #e9ecef;
+}
+
+.badge-label {
+    font-size: 0.85rem;
+    padding: 0.4em 0.6em;
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+.badge-success {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.badge-failure {
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+.highlight {
+    font-weight: bold;
+    color: #0d6efd;
+}
+
+.mode-indicator {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
