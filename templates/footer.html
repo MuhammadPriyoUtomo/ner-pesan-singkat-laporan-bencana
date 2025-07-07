@@ -1,0 +1,173 @@
+<footer class="footer fixed-bottom mt-auto bg-success">
+    <div class="container-fluid d-flex justify-content-between align-items-center" style="position: relative;">
+        <!-- Status Mode di pojok kiri -->
+        <div class="d-flex align-items-center" style="margin-top: 10px;margin-bottom: 10px;">
+            <div class="btn-group" role="group" aria-label="Mode Selection">
+
+                <button type="button" id="footer-model-btn"
+                    class="btn {% if result_mode == 'model' %} btn-dark {% else %} btn-outline-dark {% endif %}" {% if
+                    result_mode=='model' %} disabled style="opacity:1;" {% elif scraping_condition==1 %} disabled
+                    style="opacity:0.5;" {% else %} onclick="setMode('model')" {% endif %}
+                    style="border-top-left-radius: 5px; border-bottom-left-radius: 5px;">
+                    <i class="bi bi-cpu"></i> Model
+                </button>
+
+                <button type="button" id="footer-manual-btn"
+                    class="btn {% if result_mode == 'manual' %} btn-primary {% elif scraping_condition == 1 %} btn-outline-primary {% else %}btn-outline-primary{% endif %}"
+                    {% if result_mode=='manual' %} disabled style="opacity:1;" {% elif scraping_condition==1 %} disabled
+                    style="opacity:0.5;" {% else %} onclick="setMode('manual')" {% endif %}>
+                    <i class="bi bi-pencil-square"></i> Manual Input
+                </button>
+
+                <button type="button" id="footer-results-btn"
+                    class="btn {% if result_mode == 'results' %} btn-info {% else %} btn-outline-info {% endif %}" {% if
+                    result_mode=='results' %} disabled style="opacity:1;" {% elif scraping_condition==1 %} disabled
+                    style="opacity:0.5;" {% else %} onclick="setMode('results')" {% endif %}>
+                    <i class="bi bi-journal-check"></i> Results
+                </button>
+
+                <button type="button" id="footer-scraping-btn"
+                    class="btn {% if result_mode == 'auto' %} btn-warning {% else %} btn-outline-warning {% endif %}" {%
+                    if result_mode=='auto' %} disabled
+                    style="opacity:1; border-top-right-radius: 5px; border-bottom-right-radius: 5px;" {% else %}
+                    onclick="setMode('auto')" {% endif %}
+                    style="border-top-right-radius: 5px; border-bottom-right-radius: 5px;">
+                    <i class="bi bi-robot"></i> Scraping
+                </button>
+            </div>
+        </div>
+
+        <span class="text-white position-absolute top-50 start-50 translate-middle">Project Skripsi M0518036 Muhammad
+            Priyo Utomo @2025
+        </span>
+
+        <div class="position-relative">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#infoModal">
+                <i class="bi bi-person"></i> Profile / <i class="bi bi-card-checklist"></i> Requirements
+            </button>
+        </div>
+    </div>
+</footer>
+
+<!-- Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="btn-group w-100" role="group" aria-label="Info Options">
+                    <button type="button" class="btn btn-outline-success w-50 active" id="profileBtn"
+                        onclick="toggleInfo('profile')"><i class="bi bi-person"></i> Profil Saya</button>
+                    <button type="button" class="btn btn-outline-primary w-50" id="requirementsBtn"
+                        onclick="toggleInfo('requirements')"><i class="bi bi-card-checklist"></i> Requirements</button>
+                </div>
+            </div>
+
+            <div class="modal-body modal_footer_body">
+                <!-- Requirements Section -->
+                <div id="requirementsSection" style="display: none;">
+                    <div class="outline-box">
+                        <ul id="program-list">
+                            <li>1. Bootstrap==5.3.0</li>
+                            <li>2. Bootstrap Icons==1.13.1</li>
+                            <li>3. Docker Desktop==4.40.0</li>
+                            <li>4. Jquery==3.5.1</li>
+                            <li>5. MySQL==8.0</li>
+                            <li>6. Python==3.12.7</li>
+                            <li>7. Visual Studio Code==1.100.0</li>
+                        </ul>
+                    </div>
+
+                    <div class="outline-box">
+                        <ul id="requirements-list">
+                            <li class="centered-title"><strong>requirements.txt</strong></li>
+                            <!-- Daftar requirements akan dimuat di sini -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Profil Saya Section -->
+                <div id="profileSection" style="display: block;">
+                    <div class="profile-item">
+                        <span class="profile-label"><strong>Nama:</strong></span>
+                        <span class="profile-value">Muhammad Priyo Utomo</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label"><strong>NIM:</strong></span>
+                        <span class="profile-value">M0518036</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label"><strong>Prodi:</strong></span>
+                        <span class="profile-value">S1 Informatika</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label"><strong>Fakultas:</strong></span>
+                        <span class="profile-value">Fakultas Teknologi Informasi dan Sains Data</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label"><strong>Universitas:</strong></span>
+                        <span class="profile-value">Universitas Sebelas Maret Surakarta</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label"><strong>Proyek:</strong></span>
+                        <span class="profile-value">Skripsi 2025</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label"><strong>Judul:</strong></span>
+                        <span class="profile-value">EKSTRAKSI PESAN SINGKAT WHATSAPP DENGAN ALGORITMA JARO WINKLER, BERT
+                            DAN SPACY MODEL UNTUK MITIGASI BENCANA</span>
+                    </div>
+                    <div class="profile-item">
+                        <span class="profile-label"><strong>Deskripsi:</strong></span>
+                        <span class="profile-value">Aplikasi untuk scraping otomatis dan deteksi entitas bencana dan
+                            lokasi</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal untuk Clear Storage -->
+<div class="modal fade" id="clearStorageModal" tabindex="-1" aria-labelledby="clearStorageModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clearStorageModalLabel">Konfirmasi Hapus Cache</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin menghapus semua Cache?</p>
+                <p class="text-danger"><small>Data yang dihapus tidak dapat dikembalikan.</small></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-danger" id="confirmClearStorage">Hapus Semua</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Konfirmasi Peralihan Mode Dinamis -->
+<div class="modal fade" id="modeSwitchModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="modeSwitchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modeSwitchModalLabel">Konfirmasi Peralihan Mode</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modeSwitchModalBody">
+                <!-- Isi dinamis -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-primary" id="confirmModeSwitchBtn">Lanjutkan</button>
+            </div>
+        </div>
+    </div>
+</div>

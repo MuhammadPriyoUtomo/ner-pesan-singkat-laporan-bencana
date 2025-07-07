@@ -1,0 +1,496 @@
+<div class="d-flex align-items-center justify-content-between mt-3">
+    <div class="d-flex flex-column mb-3">
+        <h1 class="text-success" style="margin: 0;">
+            <i class="bi bi-cpu"></i> Data Model
+        </h1>
+    </div>
+</div>
+
+<!-- Data Model dan Status -->
+<table class="table table-bordered table-hover table-striped shadow" style="border: 2px solid #28a745;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nama Model</th>
+            <th>Aksi</th>
+            <th>Bert Model</th>
+            <th>Aksi</th>
+            <th>Spacy Model</th>
+            <th>Aksi</th>
+            <th>Jaro Winkler Model</th>
+            <th>Jaro Location</th>
+            <th>Data Siap Latih</th>
+            <th>Complete Status</th>
+            <th>Timestamp</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for model in models %}
+        <tr>
+            <td>{{ model.id }}</td>
+            <td>
+                {{ model.name }}
+            </td>
+            <td>
+                <!-- Tombol untuk membuka modal info lokasi model -->
+                <button type="button" class="btn btn-info me-1" data-bs-toggle="modal"
+                    data-bs-target="#infoLokasiModelModal_{{ model.id }}" data-model-id="{{ model.id }}"
+                    data-model-name="{{ model.name }}">
+                    <i class="bi bi-info-circle"></i>
+                </button>
+
+                <!-- Modal Info Lokasi Model -->
+                <div class="modal fade" id="infoLokasiModelModal_{{ model.id }}" tabindex="-1"
+                    aria-labelledby="infoModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+                        <!-- ganti modal-lg ke modal-xl -->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="infoModalLabel">
+                                    Informasi Parent Lokasi Model :
+                                    <span class="text-success">
+                                        {{ model.name }}
+                                    </span>
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Tambahkan wrapper table-responsive -->
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover table-striped shadow"
+                                        style="border: 2px solid #28a745;">
+                                        <thead>
+                                            <tr>
+                                                <th>Nomor</th>
+                                                <th>Provinsi</th>
+                                                <th>Kabupaten</th>
+                                                <th>Kecamatan</th>
+                                                <th>Desa</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% set max_rows = [model.locations.provinsi|length,
+                                            model.locations.kabupaten|length, model.locations.kecamatan|length,
+                                            model.locations.desa|length]|max %}
+                                            {% for i in range(max_rows) %}
+                                            <tr>
+                                                <td>{{ i + 1 }}</td> <!-- Tambahkan nomor baris -->
+                                                <td>{{ model.locations.provinsi[i] if i <
+                                                        model.locations.provinsi|length else '' }}</td>
+                                                <td>{{ model.locations.kabupaten[i] if i <
+                                                        model.locations.kabupaten|length else '' }}</td>
+                                                <td>{{ model.locations.kecamatan[i] if i <
+                                                        model.locations.kecamatan|length else '' }}</td>
+                                                <td>{{ model.locations.desa[i] if i < model.locations.desa|length
+                                                        else '' }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td>
+                {% if model.bert_model == "READY" %}
+                <span class="badge-label fw-bold btn btn-success" style="font-size: 1rem;">
+                    <i class="bi bi-check-circle me-2"></i> {{ model.bert_model }}
+                </span>
+                {% else %}
+                {{ model.bert_model }}
+                {% endif %}
+            </td>
+            <td>
+                {% if model.bert_model is not none %}
+                <!-- Tombol untuk membuka modal hapus model BERT -->
+                <button type="button" class="btn btn-warning me-1" data-bs-toggle="modal"
+                    data-bs-target="#deleteBertModelModal" data-model-id="{{ model.id }}"
+                    data-model-name="{{ model.name }}">
+                    <i class="bi bi-trash"></i>
+                </button>
+
+                <!-- Modifikasi Modal Hapus Bert Model -->
+                <div class="modal fade" id="deleteBertModelModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                    tabindex="-1" aria-labelledby="deleteBertModelModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="deleteBertModelModalLabel">Konfirmasi Hapus Bert Model
+                                </h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="fw-bold text-danger" id="deleteBertModalBody">
+                                    <!-- Teks konfirmasi akan diperbarui secara dinamis -->
+                                </p>
+                                <div class="form-group mt-3">
+                                    <label for="deleteBertPasswordConfirm" class="form-label">Masukkan password (1234)
+                                        untuk konfirmasi:</label>
+                                    <input type="password" class="form-control" id="deleteBertPasswordConfirm"
+                                        placeholder="Masukkan password">
+                                    <div class="invalid-feedback">Password salah! Harap masukkan "1234"</div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="button" class="btn btn-primary"
+                                    id="confirmBertDeleteButton">Hapus</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tombol untuk membuka modal info model BERT -->
+                <button type="button" class="btn btn-info me-1" data-bs-toggle="modal"
+                    data-bs-target="#infoBertModelModal_{{ model.id }}" data-model-id="{{ model.id }}"
+                    data-model-name="{{ model.name }}">
+                    <i class="bi bi-info-circle"></i>
+                </button>
+
+                <!-- Modal Info Model BERT -->
+                <div class="modal fade" id="infoBertModelModal_{{ model.id }}" tabindex="-1"
+                    aria-labelledby="infoModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+                        <!-- ganti modal-lg ke modal-xl -->
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="infoModalLabel">
+                                    Informasi Model BERT :
+                                    <span class="text-success">
+                                        {{ model.name }}
+                                    </span>
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Tambahkan wrapper table-responsive -->
+                                <div class="table-responsive">
+
+                                    <h5><span class="text-secondary">Ukuran Model :</span> {{ model.bert_size }}</h5>
+                                    <h5><span class="text-secondary">Bert Setting</span></h5>
+                                    <table class="table table-bordered table-hover table-striped shadow"
+                                        style="border: 2px solid #28a745;">
+                                        <thead>
+                                            <tr>
+                                                <th>Data Used</th>
+                                                <th>Epoch</th>
+                                                <th>Test Size</th>
+                                                <th>Train Batch Size</th>
+                                                <th>Eval Batch Size</th>
+                                                <th>Weight Decay</th>
+                                                <th>Learning Rate</th>
+                                                <th>Early Stopping Patience</th>
+                                                <th>Early Stopping Threshold</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% set conf = model.bert_training_settings %}
+                                            <tr>
+                                                <td>{{ conf['data_used'] }}</td>
+                                                <td>{{ conf['epochs'] }}</td>
+                                                <td>{{ conf['test_size'] }}</td>
+                                                <td>{{ conf['train_batch_size'] }}</td>
+                                                <td>{{ conf['eval_batch_size'] }}</td>
+                                                <td>{{ conf['weight_decay'] }}</td>
+                                                <td>{{ conf['learning_rate'] }}</td>
+                                                <td>{{ conf['early_stopping_patience'] }}</td>
+                                                <td>{{ conf['early_stopping_threshold'] }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <h5><span class="text-secondary">Hasil Pelatihan BERT</span></h5>
+                                    <table class="table table-bordered table-hover table-striped shadow"
+                                        style="border: 2px solid #28a745;">
+                                        <thead>
+                                            <tr>
+                                                <th>Epoch</th>
+                                                <th>Step</th>
+                                                <th>Training Loss</th>
+                                                <th>Validation Loss</th>
+                                                <th>Precision</th>
+                                                <th>Recall</th>
+                                                <th>F1</th>
+                                                <th>Accuracy</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for row in model.bert_training_detail %}
+                                            <tr>
+                                                <td>{{ row['Epoch'] }}</td>
+                                                <td>{{ row['Step'] }}</td>
+                                                <td>{{ row['Training Loss'] if row['Training Loss'] is not none else '-'
+                                                    }}</td>
+                                                <td>{{ row['Validation Loss'] }}</td>
+                                                <td>{{ row['Precision'] }}</td>
+                                                <td>{{ row['Recall'] }}</td>
+                                                <td>{{ row['F1'] }}</td>
+                                                <td>{{ row['Accuracy'] }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </td>
+            <td>
+                {% if model.spacy_model == "READY" %}
+                <span class="badge-label fw-bold btn btn-success" style="font-size: 1rem;">
+                    <i class="bi bi-check-circle me-2"></i> {{ model.spacy_model }}
+                </span>
+                {% else %}
+                {{ model.spacy_model }}
+                {% endif %}
+            </td>
+            <td>
+                {% if model.spacy_model is not none %}
+                <!-- Tombol untuk membuka modal hapus model Spacy -->
+                <button type="button" class="btn btn-warning me-1" data-bs-toggle="modal"
+                    data-bs-target="#deleteSpacyModelModal" data-model-id="{{ model.id }}"
+                    data-model-name="{{ model.name }}">
+                    <i class="bi bi-trash"></i>
+                </button>
+
+                <!-- Tombol untuk membuka modal info SpaCy -->
+                <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#infoSpacyModelModal">
+                    <i class="bi bi-info-circle"></i>
+                </button>
+
+                <!-- Modifikasi Modal Hapus Spacy Model -->
+                <div class="modal fade" id="deleteSpacyModelModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                    tabindex="-1" aria-labelledby="deleteSpacyModelModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="deleteSpacyModelModalLabel">Konfirmasi Hapus Spacy
+                                    Model</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="fw-bold text-danger" id="deleteSpacyModalBody">
+                                    <!-- Teks konfirmasi akan diperbarui secara dinamis -->
+                                </p>
+                                <div class="form-group mt-3">
+                                    <label for="deleteSpacyPasswordConfirm" class="form-label">Masukkan password (1234)
+                                        untuk konfirmasi:</label>
+                                    <input type="password" class="form-control" id="deleteSpacyPasswordConfirm"
+                                        placeholder="Masukkan password">
+                                    <div class="invalid-feedback">Password salah! Harap masukkan "1234"</div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="button" class="btn btn-primary"
+                                    id="confirmSpacyDeleteButton">Hapus</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SpaCy Training Info Modal -->
+                <div class="modal fade" id="infoSpacyModelModal" tabindex="-1" aria-labelledby="infoSpacyModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="infoSpacyModalLabel">
+                                    Informasi Model SpaCy:
+                                    <span class="text-success">
+                                        {{ model.name }}
+                                    </span>
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="table-responsive">
+                                    <!-- SpaCy Settings -->
+                                    <h5><span class="text-secondary">Ukuran Model : </span>{{ model.spacy_size }}</h5>
+                                    <h5><span class="text-secondary">SpaCy Setting</span></h5>
+                                    <table class="table table-bordered table-hover table-striped shadow"
+                                        style="border: 2px solid #28a745;">
+                                        <thead>
+                                            <tr>
+                                                <th>Data Used</th>
+                                                <th>Epoch</th>
+                                                <th>Dropout</th>
+                                                <th>Test Size</th>
+                                                <th>Batch Size Start</th>
+                                                <th>Batch Size End</th>
+                                                <th>Batch Rate</th>
+                                                <th>Learning Rate</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% set conf = model.spacy_training_settings %}
+                                            <tr>
+                                                <td>{{ conf['data_used'] }}</td>
+                                                <td>{{ conf['epochs'] }}</td>
+                                                <td>{{ conf['dropout'] }}</td>
+                                                <td>{{ conf['test_size'] }}</td>
+                                                <td>{{ conf['batch_size_start'] }}</td>
+                                                <td>{{ conf['batch_size_end'] }}</td>
+                                                <td>{{ conf['batch_rate'] }}</td>
+                                                <td>{{ conf['learning_rate'] }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <!-- SpaCy Training Results -->
+                                    <h5><span class="text-secondary">Hasil Pelatihan SpaCy</span></h5>
+                                    <table class="table table-bordered table-hover table-striped shadow"
+                                        style="border: 2px solid #28a745;">
+                                        <thead>
+                                            <tr>
+                                                <th>Epoch</th>
+                                                <th>Loss</th>
+                                                <th>Precision</th>
+                                                <th>Recall</th>
+                                                <th>F1</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for row in model.spacy_training_detail %}
+                                            <tr>
+                                                <td>{{ row['Epoch'] }}</td>
+                                                <td>{{ row['Loss'] }}</td>
+                                                <td>{{ row['Precision'] }}</td>
+                                                <td>{{ row['Recall'] }}</td>
+                                                <td>{{ row['F1'] }}</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </td>
+            <td>
+                {% if model.jaro_winkler_model == "READY" %}
+                <span class="badge-label fw-bold btn btn-success" style="font-size: 1rem;">
+                    <i class="bi bi-check-circle me-2"></i> {{ model.jaro_winkler_model }}
+                </span>
+                {% else %}
+                {{ model.jaro_winkler_model }}
+                {% endif %}
+            </td>
+            <td>{{ model.jaro_location_combination }}</td>
+            <td>{{ model.database_count }}</td>
+            <td>
+                {% if model.complete_status == "Complete" %}
+                <span class="badge-label fw-bold btn btn-success" style="font-size: 1rem;">
+                    <i class="bi bi-check-circle me-2"></i> {{ model.complete_status }}
+                </span>
+                {% else %}
+                {{ model.complete_status }}
+                {% endif %}
+            </td>
+            <td>{{ model.created_at }}</td>
+            <td>
+                <!-- Tombol untuk membuka modal hapus model -->
+                <button type="button" class="btn btn-danger me-0" data-bs-toggle="modal"
+                    data-bs-target="#deleteModelModal_{{ model.id }}" data-model-id="{{ model.id }}"
+                    data-model-name="{{ model.name }}">
+                    <i class="bi bi-trash"></i> Hapus
+                </button>
+
+                <!-- Modal Hapus Model -->
+                <div class="modal fade" id="deleteModelModal_{{ model.id }}" data-bs-backdrop="static"
+                    data-bs-keyboard="false" tabindex="-1" aria-labelledby="deleteModelModalLabel_{{ model.id }}"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="deleteModelModalLabel_{{ model.id }}">
+                                    Konfirmasi Hapus Model
+                                </h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="fw-bold text-danger deleteModalBody">
+                                    <!-- Teks konfirmasi akan diperbarui secara dinamis -->
+                                </p>
+                                <div class="form-group mt-3">
+                                    <label class="form-label">
+                                        Masukkan password (1234) untuk konfirmasi:
+                                    </label>
+                                    <input type="password" class="form-control deletePasswordConfirm"
+                                        placeholder="Masukkan password">
+                                    <div class="invalid-feedback">
+                                        Password salah! Harap masukkan "1234"
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="button" class="btn btn-primary confirmDeleteButton">Hapus</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% if total_pages > 1 %}
+<!-- Pagination -->
+<nav aria-label="Pagination">
+    <ul class="pagination justify-content-center flex-wrap">
+        <!-- First Page -->
+        <li class="page-item {% if page <= 1 %}disabled{% endif %} custom_pagination_right_left">
+            <a class="page-link custom_pagination_right_left_a" href="?page=1">First</a>
+        </li>
+
+        <!-- Previous Page -->
+        <li class="page-item {% if page <= 1 %}disabled{% endif %} custom_pagination_right_left">
+            <a class="page-link custom_pagination_right_left_a" href="?page={{ page - 1 }}">Previous</a>
+        </li>
+
+        <!-- Custom Pagination Form -->
+        <li class="page-item custom_pagination">
+            <form method="GET" action="" class="custom_pagination_form">
+                <!-- Elemen kiri -->
+                <div class="pagination_input_group">
+                    <span class="me-2 text-muted custom_pagination_form_span">Page</span>
+
+                    <input type="number" name="page" min="1" max="{{ total_pages }}" value="{{ page }}"
+                        class="form-control text-center form_input_pagination">
+
+                    <span class="ms-2 text-muted custom_pagination_form_span">of {{ total_pages }}</span>
+                </div>
+
+                <!-- Elemen kanan -->
+                <button type="submit" class="btn btn-primary pagination_submit_button">Go</button>
+            </form>
+        </li>
+
+        <!-- Next Page -->
+        <li class="page-item {% if page >= total_pages %}disabled{% endif %} custom_pagination_right_left">
+            <a class="page-link custom_pagination_right_left_a custom_pagination_right_left_a_next"
+                href="?page={{ page + 1 }}">Next</a>
+        </li>
+
+        <!-- Last Page -->
+        <li class="page-item {% if page >= total_pages %}disabled{% endif %} custom_pagination_right_left">
+            <a class="page-link custom_pagination_right_left_a" href="?page={{ total_pages }}">Last</a>
+        </li>
+    </ul>
+</nav>
+{% endif %}

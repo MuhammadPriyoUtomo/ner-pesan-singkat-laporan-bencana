@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block title %}Data Asli{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/styles_hasil.css">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex align-items-center justify-content-between mt-3">
+        <!-- Kolom Kiri: Tulisan Data Asli dan Waktu Eksekusi -->
+        <div class="d-flex flex-column mb-3">
+            <h1 class="text-success" style="margin: 0;">
+                <i class="bi-file-earmark-ruled"></i> Data Simulasi
+            </h1>
+            <h5 class="text-secondary me-2">
+                Total Data:
+                <span class="text-dark fw-semibold">{{ total_data }}</span>
+            </h5>
+            {% for row in waktu_eksekusi %}
+            <h5 class="text-secondary">Waktu Eksekusi:
+                <span class="text-dark fw-semibold">{{ row[1] }}</span>
+            </h5>
+            {% endfor %}
+        </div>
+
+        <!-- Kolom Kanan: Tombol Reset Data Generate dan Train Data -->
+        <div class="d-flex">
+            <!-- Tombol untuk Mode Deteksi -->
+            <div class="dropdown me-3">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="detectionModeDropdown"
+                    data-bs-toggle="dropdown" aria-expanded="false" {% if disable_models %} disabled {% endif %}>
+                    Mode Deteksi: Loading...
+                </button>
+                <ul class="dropdown_hasil_asli dropdown-menu" aria-labelledby="detectionModeDropdown">
+                    <li class="dropdown-item">
+                        <button class="dropdown-item" onclick="setDetectionMode('bert+spacy')"
+                            style="color: #28a745;">Bert + SpaCy</button>
+                    </li>
+                    <li class="dropdown-item">
+                        <button class="dropdown-item" onclick="setDetectionMode('bert')"
+                            style="color: #007bff;">Bert</button>
+                    </li>
+                    <li class="dropdown-item">
+                        <button class="dropdown-item" onclick="setDetectionMode('spacy')"
+                            style="color: #007bff;">Spacy</button>
+                    </li>
+                    <li class="dropdown-item">
+                        <button class="dropdown-item" onclick="setDetectionMode('jaro')"
+                            style="color: #fd7e14;">Jaro</button>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Dropdown Model Region Detection -->
+            <div class="dropdown me-3">
+                <form id="model-Region-Detection-data-form">
+                    <div class="form-group">
+                        <div class="dropdown position-relative">
+                            <button class="btn btn-success form-control text-start dropdown-toggle" type="button"
+                                id="modelRegionDetectionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+
+                                {% if selected_model_name %}
+                                Model Region Detection: {{ selected_model_name }}
+                                {% else %}
+                                Pilih Model Region Detection
+                                {% endif %}
+                            </button>
+
+                            <ul class="dropdown_hasil_asli dropdown-menu form-control"
+                                aria-labelledby="modelRegionDetectionDropdown">
+                                {% for model in models %}
+                                <li>
+                                    <button class="dropdown-item" type="button" data-id="{{ model[0] }}"
+                                        data-name="{{ model[1] }}" {% if model[1]==selected_model_name %}
+                                        data-selected="true" {% endif %}>
+                                        {{ model[1] }}
+                                    </button>
+                                </li>
+                                {% endfor %}
+                            </ul>
+
+                            <!-- Hidden input (optional, kalau perlu kirim id model ke form lain) -->
+                            <input type="hidden" name="model_id" id="model_id" value="">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Tombol Deteksi Data Generate -->
+            {% if not list_ekstraksi %}
+            <div class="me-3" id="detectionControlSection">
+                <button id="deteksiDataButton" class="btn btn-primary" disabled data-bs-toggle="modal"
+                    data-bs-target="#deteksiGenerateDataModal">
+                    <i class="bi bi-search"></i> Deteksi Data Generate
+                </button>
+            </div>
+
+            <!-- Modal Deteksi Data Generate -->
+            <div class="modal fade" id="deteksiGenerateDataModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                tabindex="-1" aria-labelledby="deteksiGenerateDataModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="deteksiGenerateDataModalLabel">Konfirmasi Deteksi Data
+                                Generate
+                            </h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            Apakah Anda yakin ingin mendeteksi data generate?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="button" class="btn btn-primary"
+                                onclick="submitDeteksiGenerateDataForm()">Lanjutkan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if list_ekstraksi %}
+            <!-- Tombol Hapus Data Hasil Deteksi -->
+            <button type="button" id="hapusDataDeteksiButton" class="btn btn-warning me-3" data-bs-toggle="modal"
+                data-bs-target="#hapusDataDeteksiModal">
+                <i class="bi bi-trash"></i> Hapus Data Hasil Deteksi
+            </button>
+
+            <!-- Modal Hapus Data Hasil Deteksi -->
+            <div class="modal fade" id="hapusDataDeteksiModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                tabindex="-1" aria-labelledby="hapusDataDeteksiModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="hapusDataDeteksiModalLabel">Konfirmasi Hapus Data Hasil
+                                Deteksi
+                            </h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body fw-bold" style="-webkit-text-fill-color: red;">
+                            Apakah Anda yakin ingin menghapus semua data hasil deteksi?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="button" class="btn btn-primary"
+                                onclick="submitHapusDataDeteksiForm()">Lanjutkan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Tombol Reset Data Generate -->
+            <button type="button" id="resetGenerateData" class="btn btn-danger me-0" data-bs-toggle="modal"
+                data-bs-target="#resetGenerateDataModal">
+                <i class="bi bi-trash"></i> Hapus Data Simulasi + Deteksi
+            </button>
+
+            <!-- Modal Reset Data Generate -->
+            <div class="modal fade" id="resetGenerateDataModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                tabindex="-1" aria-labelledby="resetGenerateDataModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="resetGenerateDataModalLabel">Konfirmasi Reset Data Generate
+                            </h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body fw-bold" style="-webkit-text-fill-color: red;">
+                            Apakah Anda yakin ingin mereset dan menghapus semua Data Olah Asli?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="button" class="btn btn-primary"
+                                onclick="submitResetGenerateDataForm()">Lanjutkan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-hover table-striped shadow mb-4" style="border: 2px solid #28a745;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Data Simulasi</th>
+                <th>DB Entities</th>
+                <th>Source</th>
+                <th>Model</th>
+                <th>Report Status</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in list_generate %}
+            <tr id="row-{{ row['id'] }}">
+                <td>{{ row['id'] }}</td>
+                <td>{{ row.text }}</td>
+                <td>{{ row.annotations }}</td>
+                <td>{{ row.source }}</td>
+                <td>{{ row.model_name }}</td>
+                <td>
+                    {% if row['report_status'] == 'report' %}
+                    <button type="button" class="btn btn-success">
+                        Report
+                    </button>
+                    {% elif row['report_status'] == 'bukan report' %}
+                    <button type="button" class="btn btn-secondary">
+                        Bukan Report
+                    </button>
+                    {% endif %}
+                </td>
+                <td>{{ row.timestamp }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if total_pages > 1 %}
+    <!-- Pagination -->
+    <nav aria-label="Pagination">
+        <ul class="pagination justify-content-center flex-wrap mb-4">
+            <!-- First Page -->
+            <li class="page-item {% if page <= 1 %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a" href="?page=1">First</a>
+            </li>
+
+            <!-- Previous Page -->
+            <li class="page-item {% if page <= 1 %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a" href="?page={{ page - 1 }}">Previous</a>
+            </li>
+
+            <!-- Custom Pagination Form -->
+            <li class="page-item custom_pagination">
+                <form method="GET" action="" class="custom_pagination_form">
+                    <!-- Elemen kiri -->
+                    <div class="pagination_input_group">
+                        <span class="me-2 text-muted custom_pagination_form_span">Page</span>
+
+                        <input type="number" name="page" min="1" max="{{ total_pages }}" value="{{ page }}"
+                            class="form-control text-center form_input_pagination">
+
+                        <span class="ms-2 text-muted custom_pagination_form_span">of {{ total_pages }}</span>
+                    </div>
+
+                    <!-- Elemen kanan -->
+                    <button type="submit" class="btn btn-primary pagination_submit_button">Go</button>
+                </form>
+            </li>
+
+            <!-- Next Page -->
+            <li class="page-item {% if page >= total_pages %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a custom_pagination_right_left_a_next"
+                    href="?page={{ page + 1 }}">Next</a>
+            </li>
+
+            <!-- Last Page -->
+            <li class="page-item {% if page >= total_pages %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a" href="?page={{ total_pages }}">Last</a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/script_hasil_asli.js"></script>
+{% endblock %}

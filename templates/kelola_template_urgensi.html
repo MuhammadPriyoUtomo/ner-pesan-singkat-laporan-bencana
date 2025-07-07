@@ -1,0 +1,168 @@
+<!-- Urgensi Section -->
+<div id="urgensiSection" style="display:none;">
+
+    <!-- Modal Tambah Urgensi -->
+    <div class="modal fade" id="addUrgensiModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered"
+            style="display: flex; justify-content: center; align-items: center;">
+            <form id="formAddUrgensi" action="{{ url_for('template.add_urgensi') }}" style="width: 20vw">
+                <div class="modal-content" style="width: auto; margin: auto;">
+                    <div class="modal-header">
+                        <h5>Tambah Urgensi</h5>
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" name="urgensi" class="form-control" required>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Tambah data urgensi
+                        </small>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Batal</button>
+                        <button class="btn btn-success" type="submit">Tambah</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-hover table-striped shadow mb-4" style="border: 2px solid #28a745;">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Urgensi</th>
+                <th>Aktif</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in urgensis %}
+            <tr data-id="{{ u.id }}">
+                <td>{{ u.id }}</td>
+                <td>{{ u.urgensi }}</td>
+                <td>
+                    {% if u.is_active %}
+                    <button type="button" class="btn btn-success">
+                        Aktif
+                    </button>
+                    {% endif %}
+                </td>
+                <td>
+                    <button type="button"
+                        class="btn btn-toggle-urgensi {% if u.is_active %}btn-warning{% else %}btn-success{% endif %}"
+                        data-id="{{ u.id }}">
+                        {% if u.is_active %}Nonaktifkan{% else %}Aktifkan{% endif %}
+                    </button>
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                        data-bs-target="#editUrgensiModal{{ u.id }}">Edit</button>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                        data-bs-target="#deleteUrgensiModal{{ u.id }}">Delete</button>
+                </td>
+            </tr>
+
+            <!-- Edit Urgensi Modal -->
+            <div class="modal fade" id="editUrgensiModal{{ u.id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <form class="formEditUrgensi" data-id="{{ u.id }}"
+                        action="{{ url_for('template.edit_urgensi', id=u.id) }}">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5>Edit Urgensi</h5>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label>Urgensi:</label>
+                                    <input type="text" name="urgensi" class="form-control" value="{{ u.urgensi }}"
+                                        required>
+                                </div>
+                                <div class="form-group mt-2">
+                                    <label>Status Aktif:</label>
+                                    <input type="checkbox" name="is_active" value="true" {% if u.is_active %}checked{%
+                                        endif %}>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Batal</button>
+                                <button class="btn btn-primary" type="submit">Simpan</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Delete Urgensi Modal -->
+            <div class="modal fade" id="deleteUrgensiModal{{ u.id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <form class="formDeleteUrgensi" data-id="{{ u.id }}"
+                        action="{{ url_for('template.delete_urgensi', id=u.id) }}">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5>Hapus Urgensi</h5>
+                            </div>
+                            <div class="modal-body">
+                                Yakin ingin menghapus urgensi ini?
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Batal</button>
+                                <button class="btn btn-danger" type="submit">Hapus</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if total_pages_urgensi > 1 %}
+    <nav aria-label="Pagination">
+        <ul class="pagination justify-content-center flex-wrap">
+            <!-- First Page -->
+            <li class="page-item {% if page_urgensi <= 1 %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a"
+                    href="?page_template={{ page_template }}&page_bencana={{ page_bencana }}&page_urgensi=1">First</a>
+            </li>
+
+            <!-- Previous Page -->
+            <li class="page-item {% if page_urgensi <= 1 %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a"
+                    href="?page_template={{ page_template }}&page_bencana={{ page_bencana }}&page_urgensi={{ page_urgensi - 1 }}">Previous</a>
+            </li>
+
+            <!-- Page Form -->
+            <li class="page-item custom_pagination">
+                <form method="GET" action="" class="custom_pagination_form">
+                    <!-- Elemen kiri -->
+                    <div class="pagination_input_group">
+                        <input type="hidden" name="page_template" value="{{ page_template }}">
+                        <input type="hidden" name="page_bencana" value="{{ page_bencana }}">
+
+                        <span class="me-2 text-muted custom_pagination_form_span">Page</span>
+
+                        <input type="number" name="page_urgensi" min="1" max="{{ total_pages_urgensi }}"
+                            value="{{ page_urgensi }}" class="form-control text-center form_input_pagination">
+
+                        <span class="ms-2 text-muted custom_pagination_form_span">of {{ total_pages_urgensi }}</span>
+                    </div>
+
+                    <button type="submit" class="btn btn-sm btn-primary pagination_submit_button">Go</button>
+                </form>
+            </li>
+
+            <!-- Next Page -->
+            <li
+                class="page-item {% if page_urgensi >= total_pages_urgensi %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a custom_pagination_right_left_a_next"
+                    href="?page_template={{ page_template }}&page_bencana={{ page_bencana }}&page_urgensi={{ page_urgensi + 1 }}">Next</a>
+            </li>
+
+            <!-- Last Page -->
+            <li
+                class="page-item {% if page_urgensi >= total_pages_urgensi %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a"
+                    href="?page_template={{ page_template }}&page_bencana={{ page_bencana }}&page_urgensi={{ total_pages_urgensi }}">Last</a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>

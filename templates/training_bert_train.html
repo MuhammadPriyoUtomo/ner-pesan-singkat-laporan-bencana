@@ -1,0 +1,164 @@
+<!-- Form untuk Training Bert -->
+<div class="card mt-3">
+
+    <!-- Card Header: Train Bert Model -->
+    <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center"
+        data-bs-toggle="collapse" data-bs-target="#bertTrainingFormCollapse" aria-expanded="false"
+        aria-controls="bertTrainingFormCollapse" style="cursor: pointer;">
+        <span class="fw-bold"><i class="bi bi-cpu me-2"></i> Train Bert Model</span>
+        <i class="bi bi-chevron-down rotate-icon transition"></i>
+    </div>
+
+    <div id="bertTrainingFormCollapse" class="collapse" data-bs-parent="#trainingAccordion">
+        <div class="card-body">
+            <form action="{{ url_for('training.training_bert_model') }}" method="POST" id="createBertForm">
+                <div class="d-flex flex-wrap gap-3">
+                    <!-- Select Model -->
+                    <div class="form-group flex-fill">
+                        <label for="spacy_model">Select Model:</label>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary form-control text-start dropdown-toggle"
+                                type="button" id="bert_modelDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                Pilih Model
+                            </button>
+                            <ul class="dropdown-menu form-control position-relative"
+                                aria-labelledby="bert_modelDropdown">
+                                {% for bert_model in bert_models %}
+                                <li>
+                                    <a class="dropdown-item dropdown-item-bert" data-value="{{ bert_model.id }}">{{
+                                        bert_model.name }}</a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            <input type="hidden" id="bert_model" name="model" value="" required>
+                        </div>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Model yang digunakan
+                        </small>
+                    </div>
+
+                    <!-- Number of Data Used -->
+                    <div class="form-group flex-fill">
+                        <label for="data_used">Number of Data Used:</label>
+                        <input type="number" id="bert_data_used" name="data_used" class="form-control"
+                            value="{{ default_bert_settings.data_used }}" min="10" required>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Jumlah Maksimal = Jumlah Data Siap Latih Model
+                        </small>
+                    </div>
+
+                    <!-- Number of Epochs -->
+                    <div class="form-group flex-fill">
+                        <label for="epochs">Number of Epochs:</label>
+                        <input type="number" id="epochs" name="epochs" class="form-control"
+                            value="{{ default_bert_settings.epochs }}" required>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Jumlah Iterasi
+                        </small>
+                    </div>
+
+                    <!-- Test Size -->
+                    <div class="form-group flex-fill">
+                        <label for="test_size">Test Size:</label>
+                        <input type="text" id="test_size" name="test_size" class="form-control"
+                            value="{{ '{:.6f}'.format(default_bert_settings.test_size).rstrip('0').rstrip('.') }}"
+                            required>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Test Size
+                        </small>
+                    </div>
+
+                    <!-- Train Batch Size -->
+                    <div class="form-group flex-fill">
+                        <label for="train_batch_size">Train Batch Size:</label>
+                        <input type="number" id="train_batch_size" name="train_batch_size" class="form-control"
+                            value="{{ default_bert_settings.train_batch_size }}" required>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Train Batch Size
+                        </small>
+                    </div>
+
+                    <!-- Eval Batch Size -->
+                    <div class="form-group flex-fill">
+                        <label for="eval_batch_size">Eval Batch Size:</label>
+                        <input type="number" id="eval_batch_size" name="eval_batch_size" class="form-control"
+                            value="{{ default_bert_settings.eval_batch_size }}" required>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Eval Batch Size
+                        </small>
+                    </div>
+
+                    <!-- Weight Decay -->
+                    <div class="form-group flex-fill">
+                        <label for="weight_decay">Weight Decay:</label>
+                        <input type="text" id="weight_decay" name="weight_decay" class="form-control"
+                            value="{{ '{:.6f}'.format(default_bert_settings.weight_decay).rstrip('0').rstrip('.') }}"
+                            required>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Weight Decay
+                        </small>
+                    </div>
+
+                    <!-- Learning Rate -->
+                    <div class="form-group flex-fill">
+                        <label for="learning_rate">Learning Rate:</label>
+                        <input type="text" id="learning_rate" name="learning_rate" class="form-control"
+                            value="{{ '{:.6f}'.format(default_bert_settings.learning_rate).rstrip('0').rstrip('.') }}"
+                            required>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Learning Rate
+                        </small>
+                    </div>
+
+                    <!-- Early Stopping Patience -->
+                    <div class="form-group flex-fill">
+                        <label for="early_stopping_patience">Early Stopping Patience:</label>
+                        <input type="number" id="early_stopping_patience" name="early_stopping_patience"
+                            class="form-control" value="{{ default_bert_settings.early_stopping_patience }}" required>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Early Stopping Patience
+                        </small>
+                    </div>
+
+                    <!-- Early Stopping Threshold -->
+                    <div class="form-group flex-fill">
+                        <label for="early_stopping_threshold">Early Stopping Threshold:</label>
+                        <input type="text" id="early_stopping_threshold" name="early_stopping_threshold"
+                            class="form-control"
+                            value="{{ '{:.6f}'.format(default_bert_settings.early_stopping_threshold).rstrip('0').rstrip('.') }}"
+                            required>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Early Stopping Threshold
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-warning w-100">Start Training</button>
+                </div>
+            </form>
+
+            <!-- Modal Konfirmasi -->
+            <div class="modal fade" id="confirmBertModal" tabindex="-1" aria-labelledby="confirmBertModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="confirmBertModalLabel">Konfirmasi Training</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                        </div>
+                        <div class="modal-body">
+                            Apakah kamu yakin ingin memulai pelatihan model Bert dengan konfigurasi ini?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="button" class="btn btn-primary" id="confirmBertSubmitBtn">Ya,
+                                Lanjutkan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

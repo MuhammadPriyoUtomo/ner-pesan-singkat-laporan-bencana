@@ -1,0 +1,125 @@
+<!-- Form untuk Membuat Model Baru -->
+<div class="card mt-3">
+
+    <!-- Card Header: Create New Model -->
+    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center"
+        data-bs-toggle="collapse" data-bs-target="#createModelFormCollapse" aria-expanded="false"
+        aria-controls="createModelFormCollapse" style="cursor: pointer;">
+        <span class="fw-bold"><i class="bi bi-plus-square-dotted me-2"></i> Create New Model</span>
+        <i class="bi bi-chevron-down rotate-icon transition"></i>
+    </div>
+
+    <div id="createModelFormCollapse" class="collapse" data-bs-parent="#trainingAccordion">
+        <div class="card-body">
+            <form action="{{ url_for('training.create_model') }}" method="POST" id="createModelForm">
+                <div class="form-group mb-3">
+                    <label for="name">Model Name:</label>
+                    <input type="text" id="name" name="name" class="form-control" required>
+                    <small class="form-text text-muted">
+                        <i class="bi bi-info-circle"></i> Nama model baru (Unique). Contoh: Regional Jawa.
+                    </small>
+                </div>
+
+                <!-- Checkbox Provinsi -->
+                <div class="form-group mb-3">
+                    <label for="provinsi">Provinsi:</label>
+                    <div id="provinsi-container" class="row"
+                        style="height: 300px; overflow-y: auto; border: 1px solid #ced4da; margin:0px; background-color: white;">
+                        {% for provinsi in provinsi_list %}
+                        <div class="col-md-3 mt-2"> <!-- Set ukuran kolom, misalnya 4 kolom per baris -->
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="provinsi[]"
+                                    id="provinsi_{{ provinsi.id }}" value="{{ provinsi.id }}">
+                                <label class="form-check-label" for="provinsi_{{ provinsi.id }}">{{
+                                    provinsi.name }}</label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="row">
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Pilih satu atau lebih provinsi.
+                        </small>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Misal: jika ingin lokasi yang digunakan adalah seluruh
+                            lokasi yang ada di provinsi JAWA TENGAH, maka cukup pilih provinsi JAWA TENGAH.
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Checkbox Kabupaten -->
+                <div class="form-group mb-3">
+                    <label for="kabupaten">Kabupaten:</label>
+                    <div id="kabupaten-container" class="row"
+                        style="height: 300px; overflow-y: auto; border: 1px solid #ced4da; margin: 0px; background-color: white;">
+                        <!-- Checkbox kabupaten akan dimuat secara dinamis oleh JavaScript -->
+                    </div>
+                    <div class="row">
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Pilih satu atau lebih kabupaten.
+                        </small>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Misal: jika ingin lokasi yang digunakan adalah seluruh
+                            lokasi yang ada di kabupaten KOTA SURAKARTA, maka cukup pilih provinsi JAWA TENGAH, pilih
+                            kabupaten KOTA SURAKARTA.
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Checkbox Kecamatan -->
+                <div class="form-group mb-3">
+                    <label for="kecamatan">Kecamatan:</label>
+                    <div id="kecamatan-container" class="row"
+                        style="height: 300px; overflow-y: auto; border: 1px solid #ced4da; margin: 0px; background-color: white;">
+                        <!-- Checkbox kecamatan akan dimuat secara dinamis oleh JavaScript -->
+                    </div>
+                    <div class="row">
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Pilih satu atau lebih kecamatan.
+                        </small>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Misal: jika ingin lokasi yang digunakan adalah seluruh
+                            lokasi yang ada di kecamatan JEBRES, maka cukup pilih provinsi JAWA TENGAH, pilih kabupaten
+                            KOTA SURAKARTA, pilih kecamatan JEBRES.
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Checkbox Desa -->
+                <div class="form-group mb-3">
+                    <label for="desa">Desa:</label>
+                    <div id="desa-container" class="row"
+                        style="height: 300px; overflow-y: auto; border: 1px solid #ced4da; margin: 0px; background-color: white;">
+                        <!-- Checkbox desa akan dimuat secara dinamis oleh JavaScript -->
+                    </div>
+                    <small class="form-text text-muted">
+                        <i class="bi bi-info-circle"></i> Pilih satu atau lebih desa.
+                    </small>
+                </div>
+
+                <button type="button" class="btn btn-success w-100" id="createModelSubmitBtn">Create Model</button>
+            </form>
+
+            <!-- Modal Konfirmasi -->
+            <div class="modal fade" id="confirmCreateModelModal" tabindex="-1"
+                aria-labelledby="confirmCreateModelModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="confirmCreateModelModalLabel">Konfirmasi Pembuatan Model</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                        </div>
+                        <div class="modal-body">
+                            Apakah kamu yakin ingin membuat model baru dengan konfigurasi ini?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="button" class="btn btn-primary" id="confirmCreateModelSubmitBtn">Ya,
+                                Lanjutkan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

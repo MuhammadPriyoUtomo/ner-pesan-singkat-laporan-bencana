@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Hasil Scraping{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/styles_scraping.css">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3" style="padding-bottom: 25px;">
+    <h1 class="text-success mb-4">
+        <i class="bi bi-search"></i> Hasil Scraping
+    </h1>
+
+    <!-- Tabel Hasil Scraping -->
+    <table class="table table-bordered table-hover table-striped shadow" style="border: 2px solid #28a745;">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th style="min-width: 10vw;">Nomor Pengirim</th>
+                <th>Tanggal</th>
+                <th>Pesan</th>
+                <th style="min-width: 20vw;">Hasil Deteksi</th>
+                <th>Status Laporan</th>
+                <th>Timestamp</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in results %}
+            <tr data-id="{{ row.id }}">
+                <td>{{ row.id }}</td>
+                <td>{{ row.nomor_pengirim }}</td>
+                <td>{{ row.tanggal }}</td>
+                <td>{{ row.chat }}</td>
+                <td>
+                    <div class="d-flex flex-column gap-2">
+                        <div class="border rounded p-2 bg-white shadow-sm">
+                            <strong class="text-primary mb-1 d-block">Hasil Ekstraksi</strong>
+                            <div class="mb-1" style="padding-bottom: 10px;">
+                                <i class="bi bi-caret-right-fill">
+                                    {% if row.hasil_ekstraksi.disaster.text %}
+                                    <strong class="text-dark">Disaster:</strong>
+                                    <span class="badge-label fw-bold"
+                                        style="font-size: 1rem; background-color: #b86cff;padding: 0.4em 0.6em; border-radius: 0.5rem;">
+                                        {{ row.hasil_ekstraksi.disaster.text }}
+                                    </span>
+                                    <small class="text-muted">
+                                        ({{ row.hasil_ekstraksi.disaster.source }})
+                                    </small>
+                                    {% else %}
+                                    <strong class="text-dark">Disaster:</strong>
+                                    <span class="text-muted" style="font-size: 1rem;">
+                                        Tidak ditemukan
+                                    </span>
+                                    {% endif %}
+                                </i>
+                            </div>
+                            <div class="mb-1" style="padding-bottom: 10px;">
+                                <i class="bi bi-caret-right-fill">
+                                    {% if row.hasil_ekstraksi.location.text %}
+                                    <strong class="text-dark">Location:</strong>
+                                    <span class="badge-label badge-success fw-bold"
+                                        style="font-size: 1rem; background-color: #17a2b8;padding: 0.4em 0.6em; border-radius: 0.5rem;">
+                                        {{ row.hasil_ekstraksi.location.text }}
+                                    </span>
+                                    <small class="text-muted">
+                                        ({{ row.hasil_ekstraksi.location.source }})
+                                    </small>
+                                    <!-- Tambahkan tautan Google Maps -->
+                                    <a href="https://www.google.com/maps/search/{{ row.hasil_ekstraksi.location.text | urlencode }}"
+                                        target="_blank" title="Cari di Google Maps"
+                                        style="margin-left: 8px; color: #0d6efd;">
+                                        <i class="bi bi bi-search"></i>
+                                    </a>
+                                    {% else %}
+                                    <strong class="text-dark">Location:</strong>
+                                    <span class="text-muted" style="font-size: 1rem;">
+                                        Tidak ditemukan
+                                    </span>
+                                    {% endif %}
+                                </i>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge {{ 'bg-success' if row.report_status == 'report' else 'bg-secondary' }}"
+                        style="font-size: 1rem; padding:10px;">
+                        {{ 'Report' if row.report_status == 'report' else 'Bukan Report' }}
+                    </span>
+                </td>
+                <td>{{ row.timestamp }}</td>
+                <td>
+                    <!-- Tombol Delete -->
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                        data-bs-target="#deleteResultModal{{ row.id }}">Delete</button>
+                </td>
+            </tr>
+
+            <!-- Delete Modal -->
+            <div class="modal fade" id="deleteResultModal{{ row.id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <form class="formDeleteResult" data-id="{{ row.id }}"
+                        action="{{ url_for('scraping.delete_result', id=row.id) }}">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5>Hapus Data</h5>
+                            </div>
+                            <div class="modal-body">
+                                Yakin ingin menghapus data ini?
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-danger" type="submit">Hapus</button>
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if total_pages > 1 %}
+    <!-- Pagination -->
+    <nav aria-label="Pagination">
+        <ul class="pagination justify-content-center flex-wrap">
+            <!-- First Page -->
+            <li class="page-item {% if page <= 1 %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a" href="?page=1">First</a>
+            </li>
+
+            <!-- Previous Page -->
+            <li class="page-item {% if page <= 1 %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a" href="?page={{ page - 1 }}">Previous</a>
+            </li>
+
+            <!-- Custom Pagination Form -->
+            <li class="page-item custom_pagination">
+                <form method="GET" action="" class="custom_pagination_form">
+                    <!-- Elemen kiri -->
+                    <div class="pagination_input_group">
+                        <span class="me-2 text-muted custom_pagination_form_span">Page</span>
+
+                        <input type="number" name="page" min="1" max="{{ total_pages }}" value="{{ page }}"
+                            class="form-control text-center form_input_pagination">
+
+                        <span class="ms-2 text-muted custom_pagination_form_span">of {{ total_pages }}</span>
+                    </div>
+
+                    <!-- Elemen kanan -->
+                    <button type="submit" class="btn btn-primary pagination_submit_button">Go</button>
+                </form>
+            </li>
+
+            <!-- Next Page -->
+            <li class="page-item {% if page >= total_pages %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a custom_pagination_right_left_a_next"
+                    href="?page={{ page + 1 }}">Next</a>
+            </li>
+
+            <!-- Last Page -->
+            <li class="page-item {% if page >= total_pages %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a" href="?page={{ total_pages }}">Last</a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/script_hasil_scraping.js"></script>
+{% endblock %}

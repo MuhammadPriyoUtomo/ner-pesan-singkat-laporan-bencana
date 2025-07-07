@@ -1,0 +1,168 @@
+<!-- Bencana Section -->
+<div id="bencanaSection" style="display:none;">
+
+    <!-- Modal Tambah Bencana -->
+    <div class="modal fade" id="addBencanaModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered"
+            style="display: flex; justify-content: center; align-items: center;">
+            <form id="formAddBencana" action="{{ url_for('template.add_bencana') }}" style="width: 20vw">
+                <div class="modal-content" style="width: auto; margin: auto;">
+                    <div class="modal-header">
+                        <h5>Tambah Bencana</h5>
+                    </div>
+                    <div class="modal-body">
+                        <input type="text" name="bencana" class="form-control" required>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Tambah data bencana
+                        </small>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Batal</button>
+                        <button class="btn btn-success" type="submit">Tambah</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-hover table-striped shadow mb-4" style="border: 2px solid #28a745;">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Bencana</th>
+                <th>Aktif</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for b in bencana %}
+            <tr data-id="{{ b.id }}">
+                <td>{{ b.id }}</td>
+                <td>{{ b.bencana }}</td>
+                <td>
+                    {% if b.is_active %}
+                    <button type="button" class="btn btn-success">
+                        Aktif
+                    </button>
+                    {% endif %}
+                </td>
+                <td>
+                    <button type="button"
+                        class="btn btn-toggle-bencana {% if b.is_active %}btn-warning{% else %}btn-success{% endif %}"
+                        data-id="{{ b.id }}">
+                        {% if b.is_active %}Nonaktifkan{% else %}Aktifkan{% endif %}
+                    </button>
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                        data-bs-target="#editBencanaModal{{ b.id }}">Edit</button>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                        data-bs-target="#deleteBencanaModal{{ b.id }}">Delete</button>
+                </td>
+            </tr>
+
+            <!-- Edit Bencana Modal -->
+            <div class="modal fade" id="editBencanaModal{{ b.id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <form class="formEditBencana" data-id="{{ b.id }}"
+                        action="{{ url_for('template.edit_bencana', id=b.id) }}">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5>Edit Bencana</h5>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label>Bencana:</label>
+                                    <input type="text" name="bencana" class="form-control" value="{{ b.bencana }}"
+                                        required>
+                                </div>
+                                <div class="form-group mt-2">
+                                    <label>Status Aktif:</label>
+                                    <input type="checkbox" name="is_active" value="true" {% if b.is_active %}checked{%
+                                        endif %}>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Batal</button>
+                                <button class="btn btn-primary" type="submit">Simpan</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Delete Bencana Modal -->
+            <div class="modal fade" id="deleteBencanaModal{{ b.id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <form class="formDeleteBencana" data-id="{{ b.id }}"
+                        action="{{ url_for('template.delete_bencana', id=b.id) }}">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5>Hapus Bencana</h5>
+                            </div>
+                            <div class="modal-body">
+                                Yakin ingin menghapus bencana ini?
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Batal</button>
+                                <button class="btn btn-danger" type="submit">Hapus</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if total_pages_bencana > 1 %}
+    <nav aria-label="Pagination">
+        <ul class="pagination justify-content-center flex-wrap">
+            <!-- First Page -->
+            <li class="page-item {% if page_bencana <= 1 %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a"
+                    href="?page_template={{ page_template }}&page_bencana=1&page_urgensi={{ page_urgensi }}">First</a>
+            </li>
+
+            <!-- Previous Page -->
+            <li class="page-item {% if page_bencana <= 1 %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a"
+                    href="?page_template={{ page_template }}&page_bencana={{ page_bencana - 1 }}&page_urgensi={{ page_urgensi }}">Previous</a>
+            </li>
+
+            <!-- Page Form -->
+            <li class="page-item custom_pagination">
+                <form method="GET" action="" class="custom_pagination_form">
+                    <!-- Elemen kiri -->
+                    <div class="pagination_input_group">
+                        <input type="hidden" name="page_template" value="{{ page_template }}">
+                        <input type="hidden" name="page_urgensi" value="{{ page_urgensi }}">
+
+                        <span class="me-2 text-muted custom_pagination_form_span">Page</span>
+
+                        <input type="number" name="page_bencana" min="1" max="{{ total_pages_bencana }}"
+                            value="{{ page_bencana }}" class="form-control text-center form_input_pagination">
+
+                        <span class="ms-2 text-muted custom_pagination_form_span">of {{ total_pages_bencana }}</span>
+                    </div>
+
+                    <button type="submit" class="btn btn-sm btn-primary pagination_submit_button">Go</button>
+                </form>
+            </li>
+
+            <!-- Next Page -->
+            <li
+                class="page-item {% if page_bencana >= total_pages_bencana %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a custom_pagination_right_left_a_next"
+                    href="?page_template={{ page_template }}&page_bencana={{ page_bencana + 1 }}&page_urgensi={{ page_urgensi }}">Next</a>
+            </li>
+
+            <!-- Last Page -->
+            <li
+                class="page-item {% if page_bencana >= total_pages_bencana %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a"
+                    href="?page_template={{ page_template }}&page_bencana={{ total_pages_bencana }}&page_urgensi={{ page_urgensi }}">Last</a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>

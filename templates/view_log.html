@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Log Detail {{ id }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <h1 class="text-success" style="margin: 0;">
+        <i class="bi-journal-text"></i> Result Deteksi:
+        <span class="text-primary">
+            {{ result_title }}
+        </span>
+    </h1>
+    <h2 class="mb-4">Log Detail untuk ID {{ id }}</h2>
+    <hr class="mb-4">
+</div>
+<div class="container-xxl">
+    {% if log_detail %}
+    {% for log_name, log_content in log_detail.items() %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <strong>{{ log_name }}</strong>
+        </div>
+        <div class="card-body">
+            <pre>{{ log_content }}</pre>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <p class="text-danger">Tidak ada log yang ditemukan untuk ID {{ id }}.</p>
+    {% endif %}
+</div>
+{% endblock %}

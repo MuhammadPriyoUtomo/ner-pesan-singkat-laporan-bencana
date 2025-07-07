@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}Data Model{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/styles_lihat_data_model.css">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3" style="padding-bottom: 25px;">
+    <h1 class="text-success mb-3">
+        <i class="bi bi-tags"></i> Lihat Data Training Berdasarkan Model
+    </h1>
+
+    <form method="POST" class="row align-items-end g-2 mb-4">
+        <div class="col-md-5">
+            <label for="model_id" class="form-label">Nama Model</label>
+            <select class="form-select" name="model_id" id="model_id" required>
+                {% for model in models %}
+                <option value="{{ model.id }}" {% if model.id|string==selected_model_id %}selected{% endif %}>
+                    {{ model.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label for="training_type" class="form-label">Jenis Model</label>
+            <select class="form-select" name="training_type" id="training_type" required>
+                <option value="bert" {% if selected_training_type=='bert' %}selected{% endif %}>BERT</option>
+                <option value="spacy" {% if selected_training_type=='spacy' %}selected{% endif %}>Spacy</option>
+                <option value="jaro" {% if selected_training_type=='jaro' %}selected{% endif %}>Jaro Winkler</option>
+            </select>
+        </div>
+
+        <div class="col-md-3 d-grid">
+            <button type="submit" class="btn btn-primary">Tampilkan</button>
+        </div>
+    </form>
+
+    {% if selected_model_name and selected_training_type %}
+    <h5 class="mb-3">
+        Menampilkan data training untuk model:
+        <span class="text-primary">{{ selected_model_name }}</span> |
+        Jenis: <span class="text-success text-uppercase">{{ selected_training_type }}</span> |
+        Jumlah Data: <span class="text-warning">{{ data_count }}</span>
+    </h5>
+    {% endif %}
+
+    <table class="table table-bordered table-hover table-striped shadow" style="border: 2px solid #28a745;">
+        <thead class="thead-dark">
+            <tr>
+                {% if selected_training_type == 'jaro' %}
+                <th>ID</th>
+                <th>Lokasi</th>
+                {% endif %}
+                {% if selected_training_type == 'spacy' %}
+                <th>ID</th>
+                <th>Text</th>
+                <th>Annotations</th>
+                <th>Model ID</th>
+                <th>Timestamp</th>
+                {% endif %}
+                {% if selected_training_type == 'bert' %}
+                <th>ID</th>
+                <th>Text</th>
+                <th>Entities</th>
+                <th>Bio Bert</th>
+                <th>Detail</th>
+                <th>Model ID</th>
+                <th>Timestamp</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% if data_filtered %}
+            {% for row in data_filtered %}
+            <tr id="{{ row.id }}">
+                {% if selected_training_type == 'jaro' %}
+                <td>{{ row.id }}</td>
+                <td>{{ row.location }}</td>
+                {% endif %}
+                {% if selected_training_type == 'spacy' %}
+                <td>{{ row.id }}</td>
+                <td>{{ row.text }}</td>
+                <td>{{ row.annotations }}</td>
+                <td>{{ row.model_id }}</td>
+                <td>{{ row.timestamp }}</td>
+                {% endif %}
+                {% if selected_training_type == 'bert' %}
+                <td>{{ row.id }}</td>
+                <td>{{ row.text }}</td>
+                <td>{{ row.annotations }}</td>
+                <td>{{ row.bio_bert_raw }}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#bioModal{{ row.id }}">
+                        <i class="bi bi-eye"></i> View
+                    </button>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="bioModal{{ row.id }}" tabindex="-1"
+                        aria-labelledby="bioModalLabel{{ row.id }}" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                            <div class="modal-content shadow rounded-4">
+                                <div class="modal-header bg-primary text-white rounded-top">
+                                    <h5 class="modal-title fw-bold" id="bioModalLabel{{ row.id }}">BIO Format
+                                        Visualisasi</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                        aria-label="Tutup"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Bagian Text -->
+                                    <div class="mb-1" style="font-family: monospace; font-size: 0.9rem;">
+                                        <strong>Text:</strong> {{ row.text }}
+                                    </div>
+
+                                    <hr class="my-2">
+
+                                    <style>
+                                        .bio-table td,
+                                        .bio-table th {
+                                            padding: 0.25rem !important;
+                                            font-size: 0.85rem;
+                                            vertical-align: middle;
+                                        }
+                                    </style>
+
+                                    <div class="table-responsive">
+                                        {% set bio = row.bio_bert_parsed %}
+                                        {% if bio.zipped_data %}
+                                        <table class="table table-bordered table-sm bio-table text-center align-middle">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Token</th>
+                                                    <th>Offset</th>
+                                                    <th>Label</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for item in bio.zipped_data %}
+                                                <tr>
+                                                    <td>{{ item.token }}</td>
+                                                    <td>{{ item.offset }}</td>
+                                                    <td>
+                                                        <span class="badge 
+                                                            {% if 'LOCATION' in item.label %} bg-success 
+                                                            {% elif 'DISASTER' in item.label %} bg-danger 
+                                                            {% else %} bg-secondary 
+                                                            {% endif %}">
+                                                            {{ item.label }}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        {% else %}
+                                        <div class="alert alert-danger mt-2">
+                                            Data BIO tidak valid atau kosong.
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td>{{ row.model_id }}</td>
+                <td>{{ row.timestamp }}</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="7" class="text-center text-muted">Tidak ada data ditemukan atau belum menerima permintaan.
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    {% if total_pages > 1 %}
+    <!-- Pagination -->
+    <nav aria-label="Pagination">
+        <ul class="pagination justify-content-center flex-wrap">
+            <!-- First Page -->
+            <li class="page-item {% if page <= 1 %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a" href="?page=1">First</a>
+            </li>
+
+            <!-- Previous Page -->
+            <li class="page-item {% if page <= 1 %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a" href="?page={{ page - 1 }}">Previous</a>
+            </li>
+
+            <!-- Custom Pagination Form -->
+            <li class="page-item custom_pagination">
+                <form method="GET" action="" class="custom_pagination_form">
+                    <!-- Elemen kiri -->
+                    <div class="pagination_input_group">
+                        <span class="me-2 text-muted custom_pagination_form_span">Page</span>
+
+                        <input type="number" name="page" min="1" max="{{ total_pages }}" value="{{ page }}"
+                            class="form-control text-center form_input_pagination">
+
+                        <span class="ms-2 text-muted custom_pagination_form_span">of {{ total_pages }}</span>
+                    </div>
+
+                    <!-- Elemen kanan -->
+                    <button type="submit" class="btn btn-primary pagination_submit_button">Go</button>
+                </form>
+            </li>
+
+            <!-- Next Page -->
+            <li class="page-item {% if page >= total_pages %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a custom_pagination_right_left_a_next"
+                    href="?page={{ page + 1 }}">Next</a>
+            </li>
+
+            <!-- Last Page -->
+            <li class="page-item {% if page >= total_pages %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a" href="?page={{ total_pages }}">Last</a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/script_lihat_data_model.js"></script>
+{% endblock %}

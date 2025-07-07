@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Data Preview{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/styles_data.css">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex flex-column mt-3 mb-3">
+        <h1 class="text-success" style="margin: 0;">
+            <i class="bi bi-hdd-stack"></i> Database
+        </h1>
+        <h5 class="text-secondary" style="margin: 0;">Jumlah tabel:
+            <span class="text-dark fw-semibold">{{ total_tables }}</span>
+        </h5>
+    </div>
+
+    <div class="row mt-3">
+        {% for table_name, data in data_preview.items() %}
+        <div class="col-lg-6 col-md-6 col-sm-12 mb-4">
+            <div class="table-responsive">
+                <!-- Tambahkan nomor tabel -->
+                <h3 class="text-success">{{ loop.index }}. {{ table_name }}</h3>
+                <table class="table table-bordered table-hover table-striped shadow" style="border: 2px solid #28a745;">
+                    <thead class="">
+                        <tr>
+                            {% for column in data.columns %}
+                            <th>{{ column }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if data.rows %}
+                        {% for row in data.rows %}
+                        <tr>
+                            {% for value in row.values() %}
+                            <td>{{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="{{ data.columns|length }}" class="text-center text-muted">Tabel ini kosong.
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+                <p class="text-muted">
+                    Total {{ data.total_count }}
+                    {% if data.remaining_count > 0 %}
+                    ({{ data.remaining_count }} data tersisa)
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/script_data.js"></script>
+{% endblock %}

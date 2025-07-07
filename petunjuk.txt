@@ -1,0 +1,32 @@
+SETUP AWAL:
+1. Install python 3.12
+2. Install Docker
+3. Buka aplikasi docker
+4. Install Visual Studio Code
+5. Buka Visual Studio Code
+6. Install extension Dev Container (Microsoft), Python (Microsoft)
+7. Buka folder projek
+8. ubah isi file .env untuk nomor WhatsApp yang dipakai
+
+9. Buka Terminal Visual Studio Code
+10. python -m venv .venv                     (membuat .venv python)
+11. .\.venv\Scripts\activate                 (mengaktifkan venv)
+12. pip install -r requirements.txt          (install requirement library)
+13. python -m lain_lain.downloader           (download model, dataset, sql, bootstrap icon) [+- 2.76 GB]
+14. docker-compose up -d                     (build docker)
+
+15. buka phpmyadmin http://localhost:8080/   [password=root]
+16. upload file database sql ke phpmyadmin   (upload file sql yang sudah di download)
+
+CARA MENJALANKAN:
+1. Buka Aplikasi Docker
+2. Buka Terminal Visual Studio Code
+3. .\.venv\Scripts\activate
+4. python app.py
+5. Buka di browser http://127.0.0.1:5000/
+
+MANUAL DOWNLOAD:
+- https://github.com/MuhammadPriyoUtomo/ner-pesan-singkat-laporan-bencana
+- https://huggingface.co/indolem/indobert-base-uncased
+- https://huggingface.co/utomomuhammadpriyo/ner-pesan-singkat-laporan-bencana/
+- https://huggingface.co/datasets/utomomuhammadpriyo/dataset-ner-pesan-singkat-laporan-bencana/

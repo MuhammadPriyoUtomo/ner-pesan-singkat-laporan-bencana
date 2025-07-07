@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Edit template{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/styles_edit_template.css">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3" style="padding-bottom: 25px;">
+
+    <h1 class="text-success">
+        <i class="bi bi-ui-checks"></i> Kelola Template Training
+    </h1>
+
+    <!-- Switch Button -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <!-- Switch Button -->
+        <div class="btn-group" role="group">
+            <button type="button" class="btn btn-outline-primary" id="templateBtn"
+                onclick="toggleKelolaMode('template')"><i class="bi bi-ui-checks"></i> Template Chat</button>
+            <button type="button" class="btn btn-outline-success" id="bencanaBtn"
+                onclick="toggleKelolaMode('bencana')"><i class="bi bi-ui-checks"></i> Daftar Bencana</button>
+            <button type="button" class="btn btn-outline-secondary" id="urgensiBtn"
+                onclick="toggleKelolaMode('urgensi')"><i class="bi bi-ui-checks"></i> Daftar Urgensi</button>
+        </div>
+
+        <!-- Tombol Tambah -->
+        <button class="btn btn-success" id="addButton" data-bs-toggle="modal" data-bs-target="#addTemplateModal">+
+            Tambah
+        </button>
+    </div>
+
+    <!-- Template Chat Section -->
+    {% include "kelola_template_chat.html" %}
+
+    <!-- Daftar Bencana Section -->
+    {% include "kelola_template_bencana.html" %}
+
+    <!-- Daftar Urgensi Section -->
+    {% include "kelola_template_urgensi.html" %}
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/script_edit_template.js"></script>
+<script src="/static/js/script_edit_template_chat.js"></script>
+<script src="/static/js/script_edit_template_bencana.js"></script>
+<script src="/static/js/script_edit_template_urgensi.js"></script>
+{% endblock %}

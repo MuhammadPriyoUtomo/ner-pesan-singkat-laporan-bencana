@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Result Deteksi{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/styles_results.css">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex flex-column mt-3">
+        <h1 class="text-success" style="margin: 0;">
+            <i class="bi bi-search"></i> Result Deteksi:
+            <span class="text-primary">
+                {{ result_title }}
+            </span>
+        </h1>
+
+        <div class="d-flex flex-row">
+            <h5 class="text-secondary me-2">
+                Total Data:
+                <span class="text-dark fw-semibold">{{ data_count }}</span> |
+            </h5>
+
+            {% for row in variabel_global %}
+            <h5 class="text-secondary me-2">Waktu Eksekusi:
+                <span class="text-dark fw-semibold">{{ row['deteksi_execution_time'] }}</span> |
+            </h5>
+
+            <h5 class="text-secondary">Waktu Eksekusi Rata-rata:
+                <span class="text-dark fw-semibold">{{ row['deteksi_average_execution_time'] }}</span>
+            </h5>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Tabel Hasil Deteksi -->
+    <table class="table table-bordered table-hover table-striped shadow mb-4" style="border: 2px solid #28a745;">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Data Simulasi</th>
+                <th style="min-width: 30vw;">Hasil Ekstraksi</th>
+                <th style="min-width: 8vw;">Report Status</th>
+                <th>Timestamp</th>
+                <th style="min-width: 7vw;">Log</th> <!-- Kolom untuk tombol log -->
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in list_ekstraksi_parsed %}
+            <tr id="row-{{ row.id }}">
+                <td>{{ row.id }}</td>
+                <td>{{ row.highlighted | safe }}</td>
+                <td>
+                    <div class="p-2 rounded shadow-sm border bg-light">
+                        <strong class="text-primary mb-1 d-block">Hasil Deteksi</strong>
+                        <div class="mb-2" style=" padding-bottom: 5px;">
+                            <i class="bi bi-caret-right-fill">
+                                {% if row['hasil_ekstraksi']['disaster']['text'] %}
+                                <strong class="text-dark">Disaster:</strong>
+                                <span class="badge-label fw-bold" style="font-size: 1rem; background-color: #b86cff;">
+                                    {{ row['hasil_ekstraksi']['disaster']['text'] or 'Tidak ditemukan' }}
+                                </span>
+                                <small class="text-muted">({{
+                                    row['hasil_ekstraksi']['disaster']['source'] or 'N/A'
+                                    }})
+                                </small>
+                                {% else %}
+                                <strong class="text-dark">Disaster:</strong>
+                                <span class="badge-label" style="font-size: 1rem;">
+                                    {{ row['hasil_ekstraksi']['disaster']['text'] or 'Tidak ditemukan' }}
+                                </span>
+                                <small class="text-muted">
+                                    ({{
+                                    row['hasil_ekstraksi']['disaster']['source'] or 'N/A'
+                                    }})
+                                </small>
+                                {% endif %}
+                            </i>
+                        </div>
+                        <div>
+                            <i class="bi bi-caret-right-fill">
+                                {% if row['hasil_ekstraksi']['location']['text'] %}
+                                <strong class="text-dark">Location:</strong>
+                                <span class="badge-label fw-bold" style="font-size: 1rem; background-color: #17a2b8;">
+                                    {{ row['hasil_ekstraksi']['location']['text'] or 'Tidak ditemukan' }}
+                                </span>
+                                <small class="text-muted">({{
+                                    row['hasil_ekstraksi']['location']['source'] or 'N/A'
+                                    }})
+                                </small>
+                                <!-- Tambahkan tautan Google Maps -->
+                                <a href="https://www.google.com/maps/search/{{ row['hasil_ekstraksi']['location']['text']|urlencode }}"
+                                    target="_blank" title="Cari di Google Maps"
+                                    style="margin-left: 8px; color: #0d6efd;">
+                                    <i class="bi bi-search"></i> Cari
+                                </a>
+                                {% else %}
+                                <strong class="text-dark">Location:</strong>
+                                <span class="badge-label" style="font-size: 1rem;">
+                                    {{ row['hasil_ekstraksi']['location']['text'] or 'Tidak ditemukan' }}
+                                </span>
+                                <small class="text-muted">
+                                    ({{
+                                    row['hasil_ekstraksi']['location']['source'] or 'N/A'
+                                    }})
+                                </small>
+                                {% endif %}
+                            </i>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    {% if row['report_status'] == 'report' %}
+                    <button type="button" class="btn btn-success">
+                        Report
+                    </button>
+                    {% elif row['report_status'] == 'bukan report' %}
+                    <button type="button" class="btn btn-secondary">
+                        Bukan Report
+                    </button>
+                    {% endif %}
+                </td>
+                <td>{{ row.timestamp }}</td>
+                <td style="min-width: 15vh;">
+                    <!-- Versi <a> -->
+                    <a href="{{ url_for('results.view_log', id=row.id) }}" target="_blank" role="button"
+                        class="btn btn-primary d-inline-flex align-items-center">
+                        <i class="bi bi-journal-text me-1"></i> Lihat Log
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if total_pages > 1 %}
+    <!-- Pagination -->
+    <nav aria-label="Pagination">
+        <ul class="pagination justify-content-center flex-wrap mb-4">
+            <!-- First Page -->
+            <li class="page-item {% if page <= 1 %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a" href="?page=1">First</a>
+            </li>
+
+            <!-- Previous Page -->
+            <li class="page-item {% if page <= 1 %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a" href="?page={{ page - 1 }}">Previous</a>
+            </li>
+
+            <!-- Custom Pagination Form -->
+            <li class="page-item custom_pagination">
+                <form method="GET" action="" class="custom_pagination_form">
+                    <!-- Elemen kiri -->
+                    <div class="pagination_input_group">
+                        <span class="me-2 text-muted custom_pagination_form_span">Page</span>
+
+                        <input type="number" name="page" min="1" max="{{ total_pages }}" value="{{ page }}"
+                            class="form-control text-center form_input_pagination">
+
+                        <span class="ms-2 text-muted custom_pagination_form_span">of {{ total_pages }}</span>
+                    </div>
+
+                    <!-- Elemen kanan -->
+                    <button type="submit" class="btn btn-primary pagination_submit_button">Go</button>
+                </form>
+            </li>
+
+            <!-- Next Page -->
+            <li class="page-item {% if page >= total_pages %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a custom_pagination_right_left_a_next"
+                    href="?page={{ page + 1 }}">Next</a>
+            </li>
+
+            <!-- Last Page -->
+            <li class="page-item {% if page >= total_pages %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a" href="?page={{ total_pages }}">Last</a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/script_results_deteksi.js"></script>
+{% endblock %}

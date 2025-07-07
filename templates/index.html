@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/styles_index.css">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Pilihan Mode -->
+    <h1 class="text-success mt-3 mb-3" style="margin: 0;">
+        <i class="bi bi-house-door"></i> Home
+    </h1>
+
+    <!-- Generate Data (Manual Mode) -->
+    <div id="manualModeSection">
+        <div class="btn-group mb-3" role="group" aria-label="Manual Mode Options">
+            <button type="button" class="btn btn-outline-primary" id="generateDataBtn" data-manual-mode="generate"
+                onclick="toggleManualMode('generate')"><i class="bi bi-gear"></i> Generate Data</button>
+            <button type="button" class="btn btn-outline-secondary" id="inputDataBtn" data-manual-mode="input"
+                onclick="toggleManualMode('input')"><i class="bi bi-pencil-square"></i> Text Input</button>
+        </div>
+
+        <!-- Generate Data Form -->
+        <div id="generateDataForm" style="display: none;">
+            <form id="generate-data-form" action="/generate_data" method="post" onsubmit="return false;">
+
+                <div class="d-flex flex-wrap gap-3">
+                    <div class="form-group flex-fill">
+                        <div class="form-group">
+                            <label for="model" class="text-success">
+                                <i class="bi bi-list-task"></i> Pilih Model:
+                            </label>
+                            <div class="dropdown">
+                                <button class="btn btn-outline-secondary form-control text-start dropdown-toggle"
+                                    type="button" id="modelDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                                    style=" background-color: white;">
+                                    Pilih Model
+                                </button>
+                                <ul class="dropdown-menu form-control" aria-labelledby="modelDropdown">
+                                    {% for model in models %}
+                                    <li>
+                                        <a class="dropdown-item text-success" href="#" data-value="{{ model.id }}">
+                                            {{ model.name }}
+                                        </a>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                <input type="hidden" id="model_id" name="model_id" required>
+                            </div>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-info-circle"></i> Pilih Model
+                            </small>
+                        </div>
+                    </div>
+                    <div class="form-group flex-fill">
+                        <div class="form-group" style="margin: 0;">
+                            <label for="num_entries" class="text-success">
+                                <i class="bi bi-123"></i> Jumlah Data:
+                            </label>
+                            <input type="number" class="form-control" id="num_entries" name="num_entries" required>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-info-circle"></i> Jumlah Data = Report + Bukan Report
+                            </small>
+                        </div>
+                    </div>
+                    <div class="form-group flex-fill">
+                        <div class="form-group" style="margin: 0;">
+                            <label for="num_status_reports" class="text-success">
+                                <i class="bi bi-check-circle-fill"></i> Jumlah Report:
+                            </label>
+                            <input type="number" class="form-control" id="num_status_reports" name="num_status_reports"
+                                required>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-info-circle"></i> Jumlah Data Report
+                            </small>
+                        </div>
+                    </div>
+                    <div class="form-group flex-fill">
+                        <div class="form-group" style="margin: 0;">
+                            <label for="num_non_reports" class="text-success">
+                                <i class="bi bi-x-circle-fill"></i> Jumlah Bukan Report:
+                            </label>
+                            <input type="number" class="form-control" id="num_non_reports" name="num_non_reports"
+                                required>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-info-circle"></i> Jumlah Data Bukan Report
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal"
+                    data-bs-target="#generateDataModal">
+                    <i class="bi bi-plus-circle"></i> Buat
+                </button>
+            </form>
+        </div>
+
+        <!-- Input Data Form -->
+        <div id="inputDataForm" style="display: none;">
+            <form class="mb-3" id="input-data-form" action="/input_data" method="post" onsubmit="return false;">
+                <div class="form-group" style="padding-bottom: 10px;">
+                    <label for="isi_chat_pengaduan" class="text-success">
+                        <i class="bi bi-chat-text"></i> Text Inputan:
+                    </label>
+                    <textarea class="form-control" id="isi_chat_pengaduan" name="isi_chat_pengaduan" rows="5"
+                        required></textarea>
+                </div>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#inputDataModal">
+                    <i class="bi bi-box-arrow-in-down"></i> Input
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Generate Data -->
+    <div class="modal fade" id="generateDataModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="generateDataModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="generateDataModalLabel">Konfirmasi Generate Data</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-primary">
+                    Tindakan ini akan menghapus semua data hasil. Lanjutkan?
+                    <div id="generateDataWarning" class="text-danger mt-2" style="display: none;">Jumlah Data tidak
+                        boleh kosong</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" onclick="submitGenerateDataForm()">Lanjutkan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Input Data -->
+    <div class="modal fade" id="inputDataModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="inputDataModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="inputDataModalLabel">Konfirmasi Input Data</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-primary">
+                    Tindakan ini akan menghapus semua data hasil. Lanjutkan?
+                    <div id="inputDataWarning" class="text-danger mt-2" style="display: none;">Text Inputan tidak boleh
+                        kosong</div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" onclick="submitInputDataForm()">Lanjutkan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/script_index.js"></script>
+{% endblock %}

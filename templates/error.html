@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Terjadi Error{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="col-md-6 text-center">
+        <div class="alert alert-danger" role="alert">
+            <i class="bi bi-exclamation-triangle-fill" style="font-size: 3rem;"></i>
+            <h2 class="mt-3">Terjadi Error!</h2>
+            <p class="lead">{{ error_message }}</p>
+            <button class="btn btn-primary mt-3" onclick="window.history.back()">
+                <i class="bi bi-arrow-left"></i> Kembali ke Halaman Sebelumnya
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}

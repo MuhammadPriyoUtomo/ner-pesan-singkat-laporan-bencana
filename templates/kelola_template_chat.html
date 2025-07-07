@@ -1,0 +1,204 @@
+<!-- Template Chat Section -->
+<div id="templateSection">
+
+    <!-- Modal Tambah Template -->
+    <div class="modal fade" id="addTemplateModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered"
+            style="display: flex; justify-content: center; align-items: center;">
+            <form id="formAddTemplate" action="{{ url_for('template.add_template') }}" style="width: 40vw">
+                <div class="modal-content" style="width: auto; margin: auto;">
+                    <div class="modal-header">
+                        <h5>Tambah Template</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Template:</label>
+                            <textarea class="form-control" name="chat_template" required></textarea>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-info-circle"></i>
+                                Jika template ini adalah <strong>pesan laporan</strong>, pastikan menyertakan
+                                <code>{lokasi}</code> dan <code>{bencana}</code> sebagai placeholder.
+                                Contoh laporan: <br>
+                                <code>Di {lokasi} ada {bencana}, kami butuh dukungan cepat, {urgensi}.</code>
+                            </small>
+                        </div>
+
+                        <div class="form-group mt-2">
+                            <label>Status:</label>
+                            <input type="text" class="form-control" name="report_status" required>
+                            <small class="form-text text-muted">
+                                <i class="bi bi-info-circle"></i>
+                                Isi dengan <code>report</code> jika template adalah <strong>pesan laporan</strong>,
+                                atau
+                                <code>bukan report</code> jika bukan <strong>pesan laporan</strong>. <br>
+                                <strong>Catatan:</strong> Template dianggap laporan jika mengandung
+                                <code>{lokasi}</code> dan <code>{bencana}</code>, serta status diisi
+                                <code>report</code>.
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Batal</button>
+                        <button class="btn btn-success" type="submit">Tambah</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-hover table-striped shadow mb-4" style="border: 2px solid #28a745;">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Template</th>
+                <th>Status</th>
+                <th>Aktif</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for row in templates %}
+            <tr data-id="{{ row.id }}">
+                <td>{{ row.id }}</td>
+                <td>{{ row.chat_template }}</td>
+                <td>{{ row.report_status }}</td>
+                <td>
+                    {% if row.is_active %}
+                    <button type="button" class="btn btn-success">
+                        Aktif
+                    </button>
+                    {% else %}
+                    {% endif %}
+                </td>
+                <td>
+                    <!-- Toggle tombol, gantikan form dengan button -->
+                    <button type="button"
+                        class="btn btn-toggle-template {% if row.is_active %}btn-warning{% else %}btn-success{% endif %}"
+                        data-id="{{ row.id }}">
+                        {% if row.is_active %}Nonaktifkan{% else %}Aktifkan{% endif %}
+                    </button>
+
+                    <!-- Tombol Edit yang memunculkan modal -->
+                    <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                        data-bs-target="#editTemplateModal{{ row.id }}">Edit</button>
+
+                    <!-- Tombol Delete yang memunculkan modal -->
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                        data-bs-target="#deleteTemplateModal{{ row.id }}">Delete</button>
+                </td>
+            </tr>
+
+            <!-- Edit Template Modal -->
+            <div class="modal fade" id="editTemplateModal{{ row.id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <form class="formEditTemplate" data-id="{{ row.id }}"
+                        action="{{ url_for('template.edit_template', id=row.id) }}">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5>Edit Template</h5>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group">
+                                    <label>Template:</label>
+                                    <textarea class="form-control" name="chat_template"
+                                        required>{{ row.chat_template }}</textarea>
+                                </div>
+                                <div class="form-group mt-2">
+                                    <label>Status:</label>
+                                    <input type="text" class="form-control" name="report_status"
+                                        value="{{ row.report_status }}" required>
+                                </div>
+                                <div class="form-group mt-2">
+                                    <label>Status Aktif:</label>
+                                    <input type="checkbox" name="is_active" value="true" {% if row.is_active %}checked{%
+                                        endif %}>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Batal</button>
+                                <button class="btn btn-primary" type="submit">Simpan</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Delete Template Modal -->
+            <div class="modal fade" id="deleteTemplateModal{{ row.id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <form class="formDeleteTemplate" data-id="{{ row.id }}"
+                        action="{{ url_for('template.delete_template', id=row.id) }}">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5>Hapus Template</h5>
+                            </div>
+                            <div class="modal-body">
+                                Yakin ingin menghapus template ini?
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Batal</button>
+                                <button class="btn btn-danger" type="submit">Hapus</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if total_pages_template > 1 %}
+    <nav aria-label="Pagination">
+        <ul class="pagination justify-content-center flex-wrap">
+            <!-- First Page -->
+            <li class="page-item {% if page_template <= 1 %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a"
+                    href="?page_template=1&page_bencana={{ page_bencana }}&page_urgensi={{ page_urgensi }}">First</a>
+            </li>
+
+            <!-- Previous Page -->
+            <li class="page-item {% if page_template <= 1 %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a"
+                    href="?page_template={{ page_template - 1 }}&page_bencana={{ page_bencana }}&page_urgensi={{ page_urgensi }}">Previous</a>
+            </li>
+
+            <!-- Page Form -->
+            <li class="page-item custom_pagination">
+                <form method="GET" action="" class="custom_pagination_form">
+                    <!-- Elemen kiri -->
+                    <div class="pagination_input_group">
+                        <input type="hidden" name="page_bencana" value="{{ page_bencana }}">
+                        <input type="hidden" name="page_urgensi" value="{{ page_urgensi }}">
+
+                        <span class="me-2 text-muted custom_pagination_form_span">Page</span>
+
+                        <input type="number" name="page_template" min="1" max="{{ total_pages_template }}"
+                            value="{{ page_template }}" class="form-control text-center form_input_pagination">
+
+                        <span class="ms-2 text-muted custom_pagination_form_span">of {{ total_pages_template }}</span>
+                    </div>
+
+                    <button type="submit" class="btn btn-sm btn-primary pagination_submit_button">Go</button>
+                </form>
+            </li>
+
+            <!-- Next Page -->
+            <li
+                class="page-item {% if page_template >= total_pages_template %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a custom_pagination_right_left_a_next"
+                    href="?page_template={{ page_template + 1 }}&page_bencana={{ page_bencana }}&page_urgensi={{ page_urgensi }}">Next</a>
+            </li>
+
+            <!-- Last Page -->
+            <li
+                class="page-item {% if page_template >= total_pages_template %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a"
+                    href="?page_template={{ total_pages_template }}&page_bencana={{ page_bencana }}&page_urgensi={{ page_urgensi }}">Last</a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>

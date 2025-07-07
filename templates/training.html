@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}Train{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/styles_train.css">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3" style="padding-bottom: 25px;">
+
+    <!-- Data Model -->
+    {% include "training_data_model.html" %}
+
+    <div class="accordion" id="trainingAccordion">
+
+        <!-- Create Model Accordion -->
+        {% include "training_create_model.html" %}
+
+        <!-- Bert Train Accordion -->
+        {% include "training_bert_train.html" %}
+
+        <!-- Spacy Train Accordion -->
+        {% include "training_spacy_train.html" %}
+
+    </div>
+    {% endblock %}
+
+    {% block scripts %}
+    <script src="/static/js/script_train.js"></script>
+    <script src="/static/js/script_train_create_model.js"></script>
+    <script src="/static/js/script_train_spacy.js"></script>
+    <script src="/static/js/script_train_bert.js"></script>
+    {% endblock %}

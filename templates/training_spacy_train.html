@@ -1,0 +1,139 @@
+<!-- Form untuk Training Spacy -->
+<div class="card mt-3">
+    <!-- Card Header: Train Spacy Model -->
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center"
+        data-bs-toggle="collapse" data-bs-target="#spacyTrainingFormCollapse" aria-expanded="false"
+        aria-controls="spacyTrainingFormCollapse" style="cursor: pointer;">
+        <span class="fw-bold"><i class="bi bi-cpu me-2"></i> Train Spacy Model</span>
+        <i class="bi bi-chevron-down rotate-icon transition"></i>
+    </div>
+
+    <div id="spacyTrainingFormCollapse" class="collapse" data-bs-parent="#trainingAccordion">
+        <div class="card-body">
+            <form action="{{ url_for('training.training_spacy_model') }}" method="POST" id="createSpacyForm">
+                <div class="d-flex flex-wrap gap-3">
+                    <!-- Select Model -->
+                    <div class="form-group flex-fill">
+                        <label for="spacy_model">Select Model:</label>
+                        <div class="dropdown">
+                            <button class="btn btn-outline-secondary form-control text-start dropdown-toggle"
+                                type="button" id="spacy_modelDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                Pilih Model
+                            </button>
+
+                            <ul class="dropdown-menu form-control spacy-dropdown position-relative"
+                                aria-labelledby="spacy_modelDropdown">
+                                {% for spacy_model in spacy_models %}
+                                <li>
+                                    <a class="dropdown-item dropdown-item-spacy" data-value="{{ spacy_model.id }}">{{
+                                        spacy_model.name }}</a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            <input type="hidden" id="spacy_model" name="model" value="" required>
+                        </div>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Model yang digunakan
+                        </small>
+                    </div>
+
+                    <!-- Number of Data Used -->
+                    <div class="form-group flex-fill">
+                        <label for="data_used">Number of Data Used:</label>
+                        <input type="number" id="spacy_data_used" name="data_used" class="form-control"
+                            value="{{ default_bert_settings.data_used }}" min="10" required>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i> Jumlah Maksimal = Jumlah Data Siap Latih Model
+                        </small>
+                    </div>
+
+                    <!-- Number of Epochs -->
+                    <div class="form-group flex-fill">
+                        <label for="epochs">Number of Epochs:</label>
+                        <input type="number" id="epochs" name="epochs" class="form-control"
+                            value="{{ default_spacy_settings.epochs }}" min="1" required>
+                        <small class="form-text text-muted"><i class="bi bi-info-circle"></i> Iterasi</small>
+                    </div>
+
+                    <!-- Test Size -->
+                    <div class="form-group flex-fill">
+                        <label for="test_size">Test Size:</label>
+                        <input type="text" id="test_size" name="test_size" class="form-control"
+                            value="{{ '{:.6f}'.format(default_spacy_settings.test_size).rstrip('0').rstrip('.') }}"
+                            required>
+                        <small class="form-text text-muted"><i class="bi bi-info-circle"></i> Test Size</small>
+                    </div>
+
+                    <!-- Dropout -->
+                    <div class="form-group flex-fill">
+                        <label for="dropout">Dropout:</label>
+                        <input type="text" id="dropout" name="dropout" class="form-control"
+                            value="{{ '{:.6f}'.format(default_spacy_settings.dropout).rstrip('0').rstrip('.') }}"
+                            required>
+                        <small class="form-text text-muted"><i class="bi bi-info-circle"></i> Dropout</small>
+                    </div>
+
+                    <!-- Batch Size Start -->
+                    <div class="form-group flex-fill">
+                        <label for="batch_size_start">Batch Size Start:</label>
+                        <input type="number" id="batch_size_start" name="batch_size_start" class="form-control"
+                            value="{{ default_spacy_settings.batch_size_start }}" required>
+                        <small class="form-text text-muted">Batch Size Start</small>
+                    </div>
+
+                    <!-- Batch Size End -->
+                    <div class="form-group flex-fill">
+                        <label for="batch_size_end">Batch Size End:</label>
+                        <input type="number" id="batch_size_end" name="batch_size_end" class="form-control"
+                            value="{{ default_spacy_settings.batch_size_end }}" required>
+                        <small class="form-text text-muted"><i class="bi bi-info-circle"></i> Batch Size End</small>
+                    </div>
+
+                    <!-- Batch Rate -->
+                    <div class="form-group flex-fill">
+                        <label for="batch_rate">Batch Rate:</label>
+                        <input type="text" id="batch_rate" name="batch_rate" class="form-control"
+                            value="{{ '{:.6f}'.format(default_spacy_settings.batch_rate).rstrip('0').rstrip('.') }}"
+                            required>
+                        <small class="form-text text-muted"><i class="bi bi-info-circle"></i> Batch rate</small>
+                    </div>
+
+                    <!-- Learning Rate -->
+                    <div class="form-group flex-fill">
+                        <label for="learning_rate">Learning Rate:</label>
+                        <input type="text" id="learning_rate" name="learning_rate" class="form-control"
+                            value="{{ '{:.6f}'.format(default_spacy_settings.learning_rate).rstrip('0').rstrip('.') }}"
+                            required>
+                        <small class="form-text text-muted"><i class="bi bi-info-circle"></i> Learning Rate</small>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary w-100">Start Training</button>
+                </div>
+            </form>
+
+            <!-- Modal Konfirmasi -->
+            <div class="modal fade" id="confirmSpacyModal" tabindex="-1" aria-labelledby="confirmSpacyModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="confirmSpacyModalLabel">Konfirmasi Training</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                        </div>
+                        <div class="modal-body">
+                            Apakah kamu yakin ingin memulai pelatihan model SpaCy dengan konfigurasi ini?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                            <button type="button" class="btn btn-primary" id="confirmSpacySubmitBtn">Ya,
+                                Lanjutkan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

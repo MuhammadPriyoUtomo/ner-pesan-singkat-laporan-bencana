@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+
+    <title>{% block title %}Project Skripsi{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/static/css/bootstrap.css">
+    <link rel="stylesheet" href="/static/css/styles_universal.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="/static/css/bootstrap-icons-1.11.3/font/bootstrap-icons.css">
+    {% block css %}{% endblock %}
+
+    <!-- Redirect jika JavaScript dinonaktifkan -->
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=/javascript-disabled">
+    </noscript>
+</head>
+
+<body>
+    <!-- Import header.html -->
+    {% include 'header.html' %}
+
+    <div class="container-fluid" style="padding-top: 56px; padding-bottom: 56px;">
+
+        <!-- Import html main custom per halaman -->
+        {% block content %}{% endblock %}
+
+        <!-- Modal Loading -->
+        <div class="modal fade" id="loadingModal" tabindex="-1" aria-labelledby="loadingModalLabel" aria-hidden="true"
+            data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body text-center">
+                        <h5 class="modal-title mb-3" id="loadingModalLabel">Memproses Data... </h5>
+                        <div class="pulser-container">
+                            <div class="pulser pulser-1"></div>
+                            <div class="pulser pulser-2"></div>
+                            <div class="pulser pulser-3"></div>
+                            <div class="pulser pulser-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'footer.html' %}
+
+    <!-- jQuery -->
+    <script src="/static/js/jquery-3.5.1.js"></script>
+    <!-- Bootstrap + Popper -->
+    <script src="/static/js/bootstrap.bundle.js"></script>
+    <script src="/static/js/script_base.js"></script>
+    <script src="/static/js/script_universal.js"></script>
+
+    <!-- Import javascript custom per halaman -->
+    {% block scripts %}{% endblock %}
+</body>
+
+</html>

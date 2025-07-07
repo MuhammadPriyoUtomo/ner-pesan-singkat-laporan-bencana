@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Lihat Data Lokasi{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/styles_lihat_data_lokasi.css">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3" style="padding-bottom: 25px;">
+    <h1 class="text-success mb-3">
+        <i class="bi bi-geo-alt"></i> Lihat Data Lokasi
+    </h1>
+
+    <h5 class="mb-3">
+        Desa: <span class="text-success text-uppercase">{{ total_data_desa }}</span> |
+        Kecamatan: <span class="text-success text-uppercase">{{ total_data_kecamatan }}</span> |
+        Kabupaten: <span class="text-success text-uppercase">{{ total_data_kabupaten }}</span> |
+        Provinsi: <span class="text-success text-uppercase">{{ total_data_provinsi }}</span>
+    </h5>
+
+    <table class="table table-bordered table-hover table-striped shadow" style="border: 2px solid #28a745;">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID Desa</th>
+                <th>Nama Desa</th>
+                <th>ID Kecamatan</th>
+                <th>Nama Kecamatan</th>
+                <th>ID Kabupaten</th>
+                <th>Nama Kabupaten</th>
+                <th>ID Provinsi</th>
+                <th>Nama Provinsi</th>
+                <th>Cari Lokasi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for location in locations %}
+            <tr data-id="{{ location.id_desa }}">
+                <td>{{ location.id_desa }}</td>
+                <td>{{ location.nama_desa }}</td>
+                <td>{{ location.id_kecamatan }}</td>
+                <td>{{ location.nama_kecamatan }}</td>
+                <td>{{ location.id_kabupaten }}</td>
+                <td>{{ location.nama_kabupaten }}</td>
+                <td>{{ location.id_provinsi }}</td>
+                <td>{{ location.nama_provinsi }}</td>
+                <td>
+                    <!-- Tambahkan tautan Google Maps -->
+                    <a href="https://www.google.com/maps/search/{{ (location.nama_desa ~ ', ' ~ location.nama_kecamatan ~ ', ' ~ location.nama_kabupaten ~ ', ' ~ location.nama_provinsi)|urlencode }}"
+                        target="_blank" title="Cari di Google Maps" style="margin-left: 8px; color: #0d6efd;">
+                        <i class="bi bi-search"></i> Cari
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if total_pages > 1 %}
+<!-- Pagination -->
+<nav aria-label="Pagination">
+    <ul class="pagination justify-content-center flex-wrap">
+        <!-- First Page -->
+        <li class="page-item {% if page <= 1 %}disabled{% endif %} custom_pagination_right_left">
+            <a class="page-link custom_pagination_right_left_a" href="?page=1">First</a>
+        </li>
+
+        <!-- Previous Page -->
+        <li class="page-item {% if page <= 1 %}disabled{% endif %} custom_pagination_right_left">
+            <a class="page-link custom_pagination_right_left_a" href="?page={{ page - 1 }}">Previous</a>
+        </li>
+
+        <!-- Custom Pagination Form -->
+        <li class="page-item custom_pagination">
+            <form method="GET" action="" class="custom_pagination_form">
+                <!-- Elemen kiri -->
+                <div class="pagination_input_group">
+                    <span class="me-2 text-muted custom_pagination_form_span">Page</span>
+
+                    <input type="number" name="page" min="1" max="{{ total_pages }}" value="{{ page }}"
+                        class="form-control text-center form_input_pagination">
+
+                    <span class="ms-2 text-muted custom_pagination_form_span">of {{ total_pages }}</span>
+                </div>
+
+                <!-- Elemen kanan -->
+                <button type="submit" class="btn btn-primary pagination_submit_button">Go</button>
+            </form>
+        </li>
+
+        <!-- Next Page -->
+        <li class="page-item {% if page >= total_pages %}disabled{% endif %} custom_pagination_right_left">
+            <a class="page-link custom_pagination_right_left_a custom_pagination_right_left_a_next"
+                href="?page={{ page + 1 }}">Next</a>
+        </li>
+
+        <!-- Last Page -->
+        <li class="page-item {% if page >= total_pages %}disabled{% endif %} custom_pagination_right_left">
+            <a class="page-link custom_pagination_right_left_a" href="?page={{ total_pages }}">Last</a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/script_lihat_data_lokasi.js"></script>
+{% endblock %}

@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}Hasil Data Deteksi{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/styles_hasil.css">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex align-items-center justify-content-between mt-3">
+
+        <div class="d-flex flex-column">
+            <h1 class="text-success" style="margin: 0;">
+                <i class="bi bi-search"></i> Hasil Deteksi
+            </h1>
+
+            <div class="d-flex flex-row">
+                <h5 class="text-secondary me-2 mb-3">
+                    Total Data:
+                    <span class="text-dark fw-semibold">{{ total_data }}</span> |
+                </h5>
+
+                {% for row in waktu_eksekusi %}
+                <h5 class="text-secondary me-2">Waktu Eksekusi:
+                    <span class="text-dark fw-semibold">{{ row['deteksi_execution_time'] }}</span> |
+                </h5>
+
+                <h5 class="text-secondary">Waktu Eksekusi Rata-rata:
+                    <span class="text-dark fw-semibold">{{ row['deteksi_average_execution_time'] }}</span>
+                </h5>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="d-flex">
+            <!-- Tombol Save Results -->
+            {% if save_status == 0 %}
+            <div id="resultsSaveControlSection">
+                <button id="resultsSaveButton" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#resultsSaveModal">
+                    <i class="bi bi-save me-2"></i> Simpan Data Deteksi
+                </button>
+
+                <!-- Modal Tombol Save Results -->
+                <div class="modal fade" id="resultsSaveModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                    tabindex="-1" aria-labelledby="resultsSaveModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="resultsSaveModalLabel">Konfirmasi Simpan Data Deteksi
+                                </h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Input untuk judul -->
+                                <div class="mb-3">
+                                    <label for="resultTitle" class="form-label">Judul Simpan Data</label>
+                                    <input type="text" class="form-control" id="resultTitle"
+                                        placeholder="Masukkan judul hasil deteksi">
+                                </div>
+                                <p>Apakah Anda yakin ingin menyimpan data deteksi?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button type="button" class="btn btn-primary"
+                                    onclick="submitSaveResultsForm()">Lanjutkan</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% elif save_status == 1 %}
+            <div id="resultsSaveControlSection">
+                <!-- Tombol hanya menampilkan ikon check dan teks -->
+                <button id="resultsSaveButton" class="btn btn-success" data-bs-toggle="modal"
+                    data-bs-target="#filenameModal">
+                    <i class="bi bi-check-circle me-2"></i> Hasil Tersimpan <i class="bi bi-question-circle ms-2"></i>
+                </button>
+
+                <!-- Modal untuk menampilkan nama file -->
+                <div class="modal fade modal-lg" id="filenameModal" tabindex="-1" aria-labelledby="filenameModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="filenameModalLabel">Informasi Nama File</h5>
+                            </div>
+                            <div class="modal-body" style="overflow-x: auto;">
+                                Nama file hasil tersimpan: <strong>{{ filename['filename'] }}</strong>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Tabel Hasil Deteksi -->
+    <table class="table table-bordered table-hover table-striped shadow mb-4" style="border: 2px solid #28a745;">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Data Simulasi</th>
+                <th style="min-width: 30vw;">Hasil Ekstraksi</th>
+                <th style="min-width: 8vw;">Report Status</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for row in list_ekstraksi %}
+            <tr id="row-{{ row['id'] }}">
+                <td>{{ row['id'] }}</td>
+                <td>{{ row.highlighted | safe }}</td>
+                <td>
+                    <div class="p-2 rounded shadow-sm border bg-light">
+                        <strong class="text-primary mb-1 d-block">Hasil Deteksi</strong>
+                        <div class="mb-2" style=" padding-bottom: 5px;">
+                            <i class="bi bi-caret-right-fill">
+                                {% if row['hasil_ekstraksi']['disaster']['text'] %}
+                                <strong class="text-dark">Disaster:</strong>
+                                <span class="badge-label fw-bold" style="font-size: 1rem; background-color: #b86cff;">
+                                    {{ row['hasil_ekstraksi']['disaster']['text'] or 'Tidak ditemukan' }}
+                                </span>
+                                <small class="text-muted">({{
+                                    row['hasil_ekstraksi']['disaster']['source'] or 'N/A'
+                                    }})
+                                </small>
+                                {% else %}
+                                <strong class="text-dark">Disaster:</strong>
+                                <span class="badge-label" style="font-size: 1rem;">
+                                    {{ row['hasil_ekstraksi']['disaster']['text'] or 'Tidak ditemukan' }}
+                                </span>
+                                <small class="text-muted">
+                                    ({{
+                                    row['hasil_ekstraksi']['disaster']['source'] or 'N/A'
+                                    }})
+                                </small>
+                                {% endif %}
+                            </i>
+                        </div>
+                        <div>
+                            <i class="bi bi-caret-right-fill">
+                                {% if row['hasil_ekstraksi']['location']['text'] %}
+                                <strong class="text-dark">Location:</strong>
+                                <span class="badge-label fw-bold" style="font-size: 1rem; background-color: #17a2b8;">
+                                    {{ row['hasil_ekstraksi']['location']['text'] or 'Tidak ditemukan' }}
+                                </span>
+                                <small class="text-muted">({{
+                                    row['hasil_ekstraksi']['location']['source'] or 'N/A'
+                                    }})
+                                </small>
+                                <!-- Tambahkan tautan Google Maps -->
+                                <a href="https://www.google.com/maps/search/{{ row['hasil_ekstraksi']['location']['text']|urlencode }}"
+                                    target="_blank" title="Cari di Google Maps"
+                                    style="margin-left: 8px; color: #0d6efd;">
+                                    <i class="bi bi-search"></i> Cari
+                                </a>
+                                {% else %}
+                                <strong class="text-dark">Location:</strong>
+                                <span class="badge-label" style="font-size: 1rem;">
+                                    {{ row['hasil_ekstraksi']['location']['text'] or 'Tidak ditemukan' }}
+                                </span>
+                                <small class="text-muted">
+                                    ({{
+                                    row['hasil_ekstraksi']['location']['source'] or 'N/A'
+                                    }})
+                                </small>
+                                {% endif %}
+                            </i>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    {% if row['report_status'] == 'report' %}
+                    <button type="button" class="btn btn-success">
+                        Report
+                    </button>
+                    {% elif row['report_status'] == 'bukan report' %}
+                    <button type="button" class="btn btn-secondary">
+                        Bukan Report
+                    </button>
+                    {% endif %}
+                </td>
+                <td>{{ row.timestamp }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if total_pages > 1 %}
+    <!-- Pagination -->
+    <nav aria-label="Pagination">
+        <ul class="pagination justify-content-center flex-wrap mb-4">
+            <!-- First Page -->
+            <li class="page-item {% if page <= 1 %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a" href="?page=1">First</a>
+            </li>
+
+            <!-- Previous Page -->
+            <li class="page-item {% if page <= 1 %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a" href="?page={{ page - 1 }}">Previous</a>
+            </li>
+
+            <!-- Custom Pagination Form -->
+            <li class="page-item custom_pagination">
+                <form method="GET" action="" class="custom_pagination_form">
+                    <!-- Elemen kiri -->
+                    <div class="pagination_input_group">
+                        <span class="me-2 text-muted custom_pagination_form_span">Page</span>
+
+                        <input type="number" name="page" min="1" max="{{ total_pages }}" value="{{ page }}"
+                            class="form-control text-center form_input_pagination">
+
+                        <span class="ms-2 text-muted custom_pagination_form_span">of {{ total_pages }}</span>
+                    </div>
+
+                    <!-- Elemen kanan -->
+                    <button type="submit" class="btn btn-primary pagination_submit_button">Go</button>
+                </form>
+            </li>
+
+            <!-- Next Page -->
+            <li class="page-item {% if page >= total_pages %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a custom_pagination_right_left_a_next"
+                    href="?page={{ page + 1 }}">Next</a>
+            </li>
+
+            <!-- Last Page -->
+            <li class="page-item {% if page >= total_pages %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a" href="?page={{ total_pages }}">Last</a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/script_hasil_deteksi.js"></script>
+{% endblock %}

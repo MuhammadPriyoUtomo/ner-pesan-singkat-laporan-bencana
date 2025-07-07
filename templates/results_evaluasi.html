@@ -1,0 +1,295 @@
+{% extends "base.html" %}
+
+{% block title %}Result Evaluasi{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/styles_results.css">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+
+    {% if source == 'text_input' %}
+    <h1 class="text-secondary" style="margin: 0;">
+        Tidak ada data evaluasi untuk result dengan sumber text input
+    </h1>
+    {% elif source == 'generate_data' %}
+    <h1 class="text-success" style="margin: 0;">
+        <i class="bi bi-clipboard-data"></i> Result Evaluasi:
+        <span class="text-primary">
+            {{ result_title }}
+        </span>
+    </h1>
+
+    <div class="model-section">
+        <h2 class="text-secondary mb-3">Evaluation Per Report</h2>
+
+        <!-- Tabel Utama -->
+        <table class="table table-bordered table-hover table-striped shadow" style="border: 2px solid #28a745;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Model Name</th>
+                    <th>Accuracy</th>
+                    <th>ID Salah Deteksi</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in hasil_evaluasi_per_report %}
+                <tr>
+                    <td>{{ row['id'] }}</td>
+                    <td>{{ row['model_name'] }}</td>
+                    <td>{{ row['accuracy'] }}</td>
+                    <td>
+                        <div class="d-flex flex-column gap-1">
+                            <div>
+                                <i class="bi bi-caret-right-fill">
+                                    Pred <strong class="text-danger">Report</strong>, Actual <strong
+                                        class="text-danger">Bukan Report</strong> :
+                                    {{ row['mismatched_ids']['pred_report_actual_bukan'] | join(', ') }}
+                                </i>
+                            </div>
+                            <div>
+                                <i class="bi bi-caret-right-fill">
+                                    Pred <strong class="text-danger">Bukan Report</strong>, Actual <strong
+                                        class="text-danger">Report</strong> :
+                                    {{ row['mismatched_ids']['pred_bukan_actual_report'] | join(', ') }}
+                                </i>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ row['timestamp'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Tabel Detail Evaluasi -->
+    <div class="evaluation-details">
+        {% for row in hasil_evaluasi_per_report %}
+        <div class="evaluation-item mb-4">
+            <div class="model-header display-flex align-items-center" style="justify-content: flex-start;">
+                <h3>
+                    <span>Detail Evaluasi <span class="text-primary">Per Report</span> Model:</span>
+                    <span class="text-success">{{ row['model_name'] }}</span>
+                </h3>
+            </div>
+
+            <!-- Confusion Matrix -->
+            <h4 class="text-secondary">Confusion Matrix</h4>
+            <table class="table table-bordered table-hover table-striped shadow" style="border: 2px solid #28a745;">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Pred: Bukan Report</th>
+                        <th>Pred: Report</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set cm = row['confusion_matrix'] | fromjson %}
+                    <tr>
+                        <th>Actual: Bukan Report</th>
+                        <td>{{ cm[0][0] }}</td>
+                        <td>{{ cm[0][1] }}</td>
+                    </tr>
+                    <tr>
+                        <th>Actual: Report</th>
+                        <td>{{ cm[1][0] }}</td>
+                        <td>{{ cm[1][1] }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Classification Report -->
+            <h4 class="text-secondary">Classification Report</h4>
+            <table class="table table-bordered table-hover table-striped shadow" style="border: 2px solid #28a745;">
+                <thead>
+                    <tr>
+                        <th>Label</th>
+                        <th>Precision</th>
+                        <th>Recall</th>
+                        <th>F1-Score</th>
+                        <th>Support</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set cr = row['classification_report'] | fromjson %}
+                    <tr>
+                        <td>Bukan Report</td>
+                        <td>{{ "%.6f"|format(cr['bukan report']['precision']) }}</td>
+                        <td>{{ "%.6f"|format(cr['bukan report']['recall']) }}</td>
+                        <td>{{ "%.6f"|format(cr['bukan report']['f1-score']) }}</td>
+                        <td>{{ cr['bukan report']['support'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Report</td>
+                        <td>{{ "%.6f"|format(cr['report']['precision']) }}</td>
+                        <td>{{ "%.6f"|format(cr['report']['recall']) }}</td>
+                        <td>{{ "%.6f"|format(cr['report']['f1-score']) }}</td>
+                        <td>{{ cr['report']['support'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Macro Avg</td>
+                        <td>{{ "%.6f"|format(cr['macro avg']['precision']) }}</td>
+                        <td>{{ "%.6f"|format(cr['macro avg']['recall']) }}</td>
+                        <td>{{ "%.6f"|format(cr['macro avg']['f1-score']) }}</td>
+                        <td>{{ cr['macro avg']['support'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Weighted Avg</td>
+                        <td>{{ "%.6f"|format(cr['weighted avg']['precision']) }}</td>
+                        <td>{{ "%.6f"|format(cr['weighted avg']['recall']) }}</td>
+                        <td>{{ "%.6f"|format(cr['weighted avg']['f1-score']) }}</td>
+                        <td>{{ cr['weighted avg']['support'] }}</td>
+                    </tr>
+                    <!-- Tambahkan Accuracy -->
+                    <tr>
+                        <td colspan="4" class="text-end"><strong>Accuracy</strong></td>
+                        <td>{{ "%.6f"|format(row['accuracy']) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Tabel Detail Evaluasi Per Entity -->
+    <div class="evaluation-details mb-4">
+        <h2 class="text-secondary mt-3">Evaluation Per Entity</h2>
+
+        <table class="table table-bordered table-hover table-striped shadow" style="border: 2px solid #28a745;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Model Name</th>
+                    <th>Accuracy</th>
+                    <th>ID Salah Deteksi</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in hasil_evaluasi_per_entity %}
+                <tr>
+                    <td>{{ row['id'] }}</td>
+                    <td>{{ row['model_name'] }}</td>
+                    <td>{{ row['accuracy'] }}</td>
+                    <td>
+                        <div class="d-flex flex-column gap-1">
+                            <div>
+                                <i class="bi bi-caret-right-fill">
+                                    Pred <strong class="text-danger">False</strong>, Actual <strong
+                                        class="text-danger">True</strong> :
+                                    {{ row['mismatched_ids']['pred_false_actual_true'] | join(', ') }}
+                                </i>
+                            </div>
+                            <div>
+                                <i class="bi bi-caret-right-fill">
+                                    Pred <strong class="text-danger">True</strong>, Actual <strong
+                                        class="text-danger">False</strong> :
+                                    {{ row['mismatched_ids']['pred_true_actual_false'] | join(', ') }}
+                                </i>
+                            </div>
+                        </div>
+                    </td>
+                    <td>{{ row['timestamp'] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Detail Confusion Matrix dan Classification Report -->
+        {% for row in hasil_evaluasi_per_entity %}
+        <div class="evaluation-item">
+            <div class="model-header display-flex align-items-center" style="justify-content: flex-start;">
+                <h3>
+                    <span>Detail Evaluasi <span class="text-primary">Per Entity</span>
+                        Model:</span>
+                    <span class="text-success">{{ row['model_name'] }}</span>
+                </h3>
+            </div>
+
+            <!-- Confusion Matrix -->
+            <h4 class="text-secondary">Confusion Matrix</h4>
+            <table class="table table-bordered table-hover table-striped shadow" style="border: 2px solid #28a745;">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Pred: False</th>
+                        <th>Pred: True</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set cm = row['confusion_matrix'] | fromjson %}
+                    <tr>
+                        <th>Actual: False</th>
+                        <td>{{ cm[0][0] }}</td>
+                        <td>{{ cm[0][1] }}</td>
+                    </tr>
+                    <tr>
+                        <th>Actual: True</th>
+                        <td>{{ cm[1][0] }}</td>
+                        <td>{{ cm[1][1] }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- Classification Report -->
+            <h4 class="text-secondary">Classification Report</h4>
+            <table class="table table-bordered table-hover table-striped shadow" style="border: 2px solid #28a745;">
+                <thead>
+                    <tr>
+                        <th>Label</th>
+                        <th>Precision</th>
+                        <th>Recall</th>
+                        <th>F1-Score</th>
+                        <th>Support</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set cr = row['classification_report'] | fromjson %}
+                    <tr>
+                        <td>False</td>
+                        <td>{{ "%.6f"|format(cr['False']['precision']) }}</td>
+                        <td>{{ "%.6f"|format(cr['False']['recall']) }}</td>
+                        <td>{{ "%.6f"|format(cr['False']['f1-score']) }}</td>
+                        <td>{{ cr['False']['support'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>True</td>
+                        <td>{{ "%.6f"|format(cr['True']['precision']) }}</td>
+                        <td>{{ "%.6f"|format(cr['True']['recall']) }}</td>
+                        <td>{{ "%.6f"|format(cr['True']['f1-score']) }}</td>
+                        <td>{{ cr['True']['support'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Macro Avg</td>
+                        <td>{{ "%.6f"|format(cr['macro avg']['precision']) }}</td>
+                        <td>{{ "%.6f"|format(cr['macro avg']['recall']) }}</td>
+                        <td>{{ "%.6f"|format(cr['macro avg']['f1-score']) }}</td>
+                        <td>{{ cr['macro avg']['support'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Weighted Avg</td>
+                        <td>{{ "%.6f"|format(cr['weighted avg']['precision']) }}</td>
+                        <td>{{ "%.6f"|format(cr['weighted avg']['recall']) }}</td>
+                        <td>{{ "%.6f"|format(cr['weighted avg']['f1-score']) }}</td>
+                        <td>{{ cr['weighted avg']['support'] }}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="text-end"><strong>Accuracy</strong></td>
+                        <td>{{ "%.6f"|format(row['accuracy']) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/script_results_evaluasi.js"></script>
+{% endblock %}

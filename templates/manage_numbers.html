@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Manajemen Nomor{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/styles_scraping.css">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3" style="padding-bottom: 25px;">
+    <h1 class="text-success mb-4">
+        <i class="bi-telephone"></i> Manajemen Nomor
+    </h1>
+
+    <!-- Tabel Nomor -->
+    <table class="table table-bordered table-hover table-striped shadow" style="border: 2px solid #28a745;">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nomor Pengirim</th>
+                <th>Pesan Belum Dibaca</th>
+                <th>Timestamp</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for number in numbers %}
+            <tr data-id="{{ number.id }}">
+                <td>{{ number.id }}</td>
+                <td>{{ number.sender_number }}</td>
+                <td>
+                    {% if number.has_unread_messages == 1 %}
+                    Ada
+                    {% else %}
+                    Tidak Ada
+                    {% endif %}
+                </td>
+                <td>{{ number.timestamp }}</td>
+                <td>
+                    <!-- Tombol Delete -->
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                        data-bs-target="#deleteNumberModal{{ number.id }}">Hapus</button>
+                </td>
+            </tr>
+
+            <!-- Delete Modal -->
+            <div class="modal fade" id="deleteNumberModal{{ number.id }}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <form class="formDeleteNumber" data-id="{{ number.id }}"
+                        action="{{ url_for('scraping.delete_number', id=number.id) }}">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5>Hapus Nomor</h5>
+                            </div>
+                            <div class="modal-body">
+                                Yakin ingin menghapus nomor ini?
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                                <button class="btn btn-danger" type="submit">Hapus</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if total_pages > 1 %}
+    <!-- Pagination -->
+    <nav aria-label="Pagination">
+        <ul class="pagination justify-content-center flex-wrap">
+            <!-- First Page -->
+            <li class="page-item {% if page <= 1 %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a" href="?page=1">First</a>
+            </li>
+
+            <!-- Previous Page -->
+            <li class="page-item {% if page <= 1 %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a" href="?page={{ page - 1 }}">Previous</a>
+            </li>
+
+            <!-- Custom Pagination Form -->
+            <li class="page-item custom_pagination">
+                <form method="GET" action="" class="custom_pagination_form">
+                    <!-- Elemen kiri -->
+                    <div class="pagination_input_group">
+                        <span class="me-2 text-muted custom_pagination_form_span">Page</span>
+
+                        <input type="number" name="page" min="1" max="{{ total_pages }}" value="{{ page }}"
+                            class="form-control text-center form_input_pagination">
+
+                        <span class="ms-2 text-muted custom_pagination_form_span">of {{ total_pages }}</span>
+                    </div>
+
+                    <!-- Elemen kanan -->
+                    <button type="submit" class="btn btn-primary pagination_submit_button">Go</button>
+                </form>
+            </li>
+
+            <!-- Next Page -->
+            <li class="page-item {% if page >= total_pages %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a custom_pagination_right_left_a_next"
+                    href="?page={{ page + 1 }}">Next</a>
+            </li>
+
+            <!-- Last Page -->
+            <li class="page-item {% if page >= total_pages %}disabled{% endif %} custom_pagination_right_left">
+                <a class="page-link custom_pagination_right_left_a" href="?page={{ total_pages }}">Last</a>
+            </li>
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/script_manage_numbers.js"></script>
+{% endblock %}

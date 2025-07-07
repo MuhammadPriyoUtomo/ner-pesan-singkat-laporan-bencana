@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Scraping{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="/static/css/styles_scraping.css">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3" style="padding-bottom: 25px;">
+
+    <div class="d-flex align-items-center justify-content-between mt-3 mb-3">
+        <h1 class="text-success">
+            <i class="bi bi-robot"></i> Scraping
+        </h1>
+
+        <div class="d-flex justify-content-center align-items-center">
+            <div id="detection-alert" class="alert alert-info d-none" role="alert" style="margin: 0 !important;">
+                <!-- Pesan notifikasi akan ditampilkan di sini -->
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center">
+
+            <!-- Tombol untuk Mode Deteksi -->
+            <div class="dropdown me-3">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="detectionModeDropdown"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Mode Deteksi: Loading...
+                </button>
+                <ul class="dropdown_hasil_asli dropdown-menu" aria-labelledby="detectionModeDropdown"
+                    style="padding-bottom: 15px;">
+                    <li class="dropdown-item">
+                        <button class="dropdown-item" onclick="setDetectionMode('bert+spacy')"
+                            style="color: #28a745;">Bert + SpaCy</button>
+                    </li>
+                    <li class="dropdown-item">
+                        <button class="dropdown-item" onclick="setDetectionMode('bert')"
+                            style="color: #007bff;">Bert</button>
+                    </li>
+                    <li class="dropdown-item">
+                        <button class="dropdown-item" onclick="setDetectionMode('spacy')"
+                            style="color: #007bff;">Spacy</button>
+                    </li>
+                    <li class="dropdown-item">
+                        <button class="dropdown-item" onclick="setDetectionMode('jaro')"
+                            style="color: #fd7e14;">Jaro</button>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Dropdown Model Region Detection -->
+            <div class="dropdown me-3">
+                <form id="model-Region-Detection-data-form">
+                    <div class="form-group">
+                        <div class="dropdown position-relative">
+                            <button class="btn btn-success form-control text-start dropdown-toggle" type="button"
+                                id="modelRegionDetectionDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                {% if selected_model_name %}
+                                Model Region Detection: {{ selected_model_name }}
+                                {% else %}
+                                Pilih Model Region Detection
+                                {% endif %}
+                            </button>
+
+                            <ul class="dropdown_hasil_asli dropdown-menu form-control"
+                                aria-labelledby="modelRegionDetectionDropdown">
+                                {% for model in models %}
+                                <li>
+                                    <button class="dropdown-item" type="button" data-id="{{ model[0] }}"
+                                        data-name="{{ model[1] }}" {% if model[1]==selected_model_name %}
+                                        data-selected="true" {% endif %}>
+                                        {{ model[1] }}
+                                    </button>
+                                </li>
+                                {% endfor %}
+                            </ul>
+
+                            <!-- Hidden input (optional, kalau perlu kirim id model ke form lain) -->
+                            <input type="hidden" name="model_id" id="model_id" value="">
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="me-3" id="scrapingControlSection">
+                <button id="toggle-scraping-detection" class="btn btn-primary" disabled>
+                    Start Scraping & Detection
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <table class="table table-bordered table-hover table-striped shadow mb-4" style="border: 2px solid #28a745;">
+        <thead class="thead-dark">
+            <tr>
+                <th>ID</th>
+                <th style="min-width: 10vw;">Nomor Pengirim</th>
+                <th>Tanggal</th>
+                <th>Pesan</th>
+                <th style="min-width: 20vw;">Hasil Deteksi</th>
+                <th>Status Laporan</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody id="detection-results">
+            <!-- Hasil scraping akan dimuat di sini -->
+        </tbody>
+    </table>
+
+    <!-- Modal untuk Start Scraping -->
+    <div class="modal fade" id="startScrapingModal" tabindex="-1" aria-labelledby="startScrapingModalLabel"
+        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <h5 class="modal-title mb-3">
+                        Scraping dan Deteksi sedang dimulai. Harap tunggu...
+                    </h5>
+                    <div class="pulser-container">
+                        <div class="pulser pulser-1"></div>
+                        <div class="pulser pulser-2"></div>
+                        <div class="pulser pulser-3"></div>
+                        <div class="pulser pulser-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal untuk Stop Scraping -->
+    <div class="modal fade" id="stopScrapingModal" tabindex="-1" aria-labelledby="stopScrapingModalLabel"
+        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <h5 class="modal-title mb-3">
+                        Scraping dan Deteksi sedang dihentikan. Harap tunggu...
+                    </h5>
+                    <div class="pulser-container">
+                        <div class="pulser pulser-1"></div>
+                        <div class="pulser pulser-2"></div>
+                        <div class="pulser pulser-3"></div>
+                        <div class="pulser pulser-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/script_scraping.js"></script>
+{% endblock %}

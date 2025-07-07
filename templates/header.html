@@ -1,0 +1,177 @@
+<nav class="navbar border-bottom navbar-expand-lg bg-success navbar-dark fixed-top shadow"
+    style="border-bottom: 0 !important;">
+    <div class="container-fluid">
+        <a class="navbar-brand">Project Skripsi</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <div class="d-flex w-100">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 col-lg-6 d-flex align-items-center">
+
+                    {% if result_mode == 'manual' %}
+                    <li class="nav-item">
+                        <a class="nav-link nav_proj_act {% if active_page == 'home' %}active{% endif %} "
+                            href="/">Home</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link nav_proj_act {% if active_page == 'hasil_asli' %}active{% endif %} {% if disable_hasil_asli %}disabled{% endif %}"
+                            href="/hasil_asli" {% if disable_hasil_asli %}tabindex="-1" aria-disabled="true" {% endif
+                            %}>
+                            Data Simulasi
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link nav_proj_act {% if active_page == 'hasil_deteksi' %}active{% endif %} {% if disable_hasil_deteksi %}disabled{% endif %}"
+                            href="/hasil_deteksi" {% if disable_hasil_deteksi %}tabindex="-1" aria-disabled="true" {%
+                            endif %}>
+                            Data Deteksi
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link nav_proj_act {% if active_page == 'evaluasi' and not disable_evaluasi %}active{% endif %} {% if disable_evaluasi %}disabled{% endif %}"
+                            href="/evaluate_matrix" {% if disable_hasil_deteksi %}tabindex="-1" aria-disabled="true" {%
+                            endif %}>
+                            Evaluasi
+                        </a>
+                    </li>
+
+                    {% elif result_mode == 'model' %}
+
+                    <li class="nav-item">
+                        <a class="nav-link nav_proj_act {% if active_page == 'training' %}active{% endif %}"
+                            href="/training" tabindex="-1" aria-disabled="true">
+                            Training
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link nav_proj_act {% if active_page == 'edit template' %}active{% endif %}"
+                            href="/kelola_template" tabindex="-1" aria-disabled="true">
+                            Edit Template
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link nav_proj_act {% if active_page == 'lihat lokasi' %}active{% endif %}"
+                            href="/lihat_lokasi" tabindex="-1" aria-disabled="true">
+                            Data Lokasi
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link nav_proj_act {% if active_page == 'data model' %}active{% endif %}"
+                            href="/lihat_data_model" tabindex="-1" aria-disabled="true">
+                            Data Model
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link nav_proj_act {% if active_page == 'data' %}active{% endif %}"
+                            href="/data">Database</a>
+                    </li>
+                    {% elif result_mode == 'results' %}
+                    <li class="nav-item">
+                        <a class="nav-link nav_proj_act {% if active_page == 'results' %}active{% endif %}"
+                            href="/results">
+                            Results
+                        </a>
+                    </li>
+
+                    {% if has_selected_result %}
+                    <li class="nav-item">
+                        <a class="nav-link nav_proj_act {% if active_page == 'results_hasil_simulasi' %}active{% endif %}"
+                            href="/results_hasil_simulasi">
+                            Results Simulasi
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link nav_proj_act {% if active_page == 'results_hasil_deteksi' %}active{% endif %}"
+                            href="/results_hasil_deteksi">
+                            Results Deteksi
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link nav_proj_act {% if active_page == 'results_evaluasi' %}active{% endif %}"
+                            href="/results_evaluasi">
+                            Results Evaluasi
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% elif result_mode == 'auto' %}
+                    <li class="nav-item">
+                        <a class="nav-link nav_proj_act {% if active_page == 'scraping' %}active{% endif %}"
+                            href="/scraping">
+                            Scraping
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link nav_proj_act {% if active_page == 'hasil scraping' %}active{% endif %}"
+                            href="/hasil_scraping">
+                            Hasil Scraping
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link nav_proj_act {% if active_page == 'manage_numbers' %}active{% endif %}"
+                            href="/manage_numbers">
+                            Managemen Nomor
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <form class="d-flex col-lg-6 position-relative" role="search" onsubmit="return false;">
+                    <div class="input-group">
+                        <select id="search-mode" class="form-select" style="max-width: 120px;">
+                            <option value="lokasi">Lokasi</option>
+                            <option value="model">Model</option>
+                        </select>
+                        <!-- <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-search"></i>
+                        </span> -->
+                        <input class="form-control border-start-0" type="search" id="search-input"
+                            placeholder="Cari Data Lokasi atau Model" aria-label="Search">
+
+                        <button class="btn btn-primary" id="search-btn" type="button">
+                            <i class="bi bi-search"></i> Search
+                        </button>
+                    </div>
+
+                    <div id="search-wrapper" class="position-absolute w-100 bg-white" style="top: 100%; z-index: 1000;">
+                        <div id="search-results" class="list-group w-100" style="max-height: 300px; overflow-y: auto;">
+                        </div>
+                        <div id="search-info" class="w-100 text-center text-white bg-success"></div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Modal -->
+<div class="modal fade" id="copyModal" tabindex="-1" aria-labelledby="copyModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="copyModalLabel">Berhasil menyalin data.</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="copyModalBody">
+                <!-- Data yang disalin akan ditampilkan di sini -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
