@@ -117,8 +117,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const mode = searchMode.value;
             let url = '/search?query=' + encodeURIComponent(query);
-            if (mode === 'model') {
-                url = '/search_model?query=' + encodeURIComponent(query);
+            if (mode === 'model_bert') {
+                url = '/search_model?query=' + encodeURIComponent(query) + '&type=bert';
+            } else if (mode === 'model_spacy') {
+                url = '/search_model?query=' + encodeURIComponent(query) + '&type=spacy';
             } else if (mode === 'bencana') {
                 url = '/search_bencana?query=' + encodeURIComponent(query);
             }
@@ -146,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         });
                         searchResults.appendChild(listGroup);
                         searchInfo.textContent = `Menemukan ${data.length} data lokasi yang relevan`;
-                    } else if (mode === 'model') {
+                    }  else if (mode === 'model_bert' || mode === 'model_spacy') {
                         // 1. Head luar (selalu terlihat)
                         let tableHead = document.createElement('table');
                         tableHead.className = 'table table-bordered table-hover table-striped shadow mb-0 w-100';
@@ -194,24 +196,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         // Sinkronisasi lebar kolom head luar dan isi, serta th kosong untuk scrollbar
                         setTimeout(() => {
-                            const headRow = `
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Text</th>
-                                    <th>Model ID</th>
-                                    <th>BERT Used</th>
-                                    <th>Spacy Used</th>
-                                </tr>
-                            `;
                             const bodyThs = tableBody.querySelectorAll('thead th');
-                            // Hitung lebar scrollbar
                             const scrollbarWidth = scrollDiv.offsetWidth - scrollDiv.clientWidth;
-                            // Jika ada scrollbar, tambahkan th kosong di head luar
                             let extraTh = '';
                             if (scrollbarWidth > 0) {
                                 extraTh = `<th style="width:${scrollbarWidth}px;min-width:${scrollbarWidth}px;max-width:${scrollbarWidth}px;padding:0;border:none;background:transparent"></th>`;
                             }
-                            // Update ulang tableHead agar th ekstra muncul
                             tableHead.innerHTML = `
                                 <thead>
                                     <tr>
@@ -224,16 +214,19 @@ document.addEventListener('DOMContentLoaded', function () {
                                     </tr>
                                 </thead>
                             `;
-                            // Sinkronisasi ulang lebar kolom
                             const headThs = tableHead.querySelectorAll('th');
                             for (let i = 0; i < Math.min(headThs.length, bodyThs.length); i++) {
                                 const width = bodyThs[i].getBoundingClientRect().width;
                                 headThs[i].style.width = width + 'px';
                             }
-                            // th ekstra sudah diatur width-nya di atas
                         }, 0);
 
-                        searchInfo.textContent = `Menemukan ${data.length} data model yang relevan`;
+                        // Info label sesuai mode
+                        if (mode === 'model_bert') {
+                            searchInfo.textContent = `Menemukan ${data.length} data model BERT yang relevan`;
+                        } else {
+                            searchInfo.textContent = `Menemukan ${data.length} data model Spacy yang relevan`;
+                        }
                     } else if (mode === 'bencana') {
                         const listGroup = document.createElement('div');
                         listGroup.className = 'list-group';
