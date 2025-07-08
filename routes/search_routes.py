@@ -79,6 +79,24 @@ def search():
     connection.close()
     return jsonify(results)
     
+@search_bp.route('/search_bencana')
+def search_bencana():
+    query = request.args.get('query', '')
+    if not query.strip():
+        return jsonify([])
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute("""
+        SELECT id, bencana
+        FROM list_bencana
+        WHERE  bencana LIKE %s
+        ORDER BY bencana ASC
+    """, (f"%{query}%",))
+    results = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return jsonify(results)
+    
 @search_bp.route('/search_model')
 def search_model():
     query = request.args.get('query', '')
