@@ -100,17 +100,23 @@ def search_bencana():
 @search_bp.route('/search_model')
 def search_model():
     query = request.args.get('query', '')
-    if not query.strip():
+    model_type = request.args.get('type', '')  # bert atau spacy
+    if not query.strip() or model_type not in ['bert', 'spacy']:
         return jsonify([])
     connection = get_db_connection()
     cursor = connection.cursor()
-    cursor.execute("""
+    sql = """
         SELECT id, text, model_id, bert_train_used, spacy_train_used
         FROM data_create_model
         WHERE text LIKE %s
-        AND (bert_train_used = 1 OR spacy_train_used = 1)
-        ORDER BY id ASC
-    """, (f"%{query}%",))
+    """
+    params = [f"%{query}%"]
+    if model_type == 'bert':
+        sql += " AND bert_train_used = 1"
+    elif model_type == 'spacy':
+        sql += " AND spacy_train_used = 1"
+    sql += " ORDER BY id ASC"
+    cursor.execute(sql, params)
     results = cursor.fetchall()
     cursor.close()
     connection.close()
