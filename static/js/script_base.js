@@ -119,6 +119,8 @@ document.addEventListener('DOMContentLoaded', function () {
             let url = '/search?query=' + encodeURIComponent(query);
             if (mode === 'model') {
                 url = '/search_model?query=' + encodeURIComponent(query);
+            } else if (mode === 'bencana') {
+                url = '/search_bencana?query=' + encodeURIComponent(query);
             }
             fetch(url)
                 .then(response => response.json())
@@ -232,6 +234,22 @@ document.addEventListener('DOMContentLoaded', function () {
                         }, 0);
 
                         searchInfo.textContent = `Menemukan ${data.length} data model yang relevan`;
+                    } else if (mode === 'bencana') {
+                        const listGroup = document.createElement('div');
+                        listGroup.className = 'list-group';
+                        data.forEach(item => {
+                            const resultItem = document.createElement('div');
+                            resultItem.className = 'list-group-item d-flex justify-content-between align-items-center flex-wrap';
+                            resultItem.innerHTML = `
+                            <span>
+                                <i class="bi bi-clipboard-data-fill" style="cursor:pointer" onclick="copyToClipboard('${item[1]}')"></i>
+                                ${highlightText(item[1], query)}
+                            </span>
+                        `;
+                            listGroup.appendChild(resultItem);
+                        });
+                        searchResults.appendChild(listGroup);
+                        searchInfo.textContent = `Menemukan ${data.length} data bencana yang relevan`;
                     }
                     searchInfo.style.display = 'block';
                     searchInfo.style.top = `${searchResults.offsetHeight}px`;
