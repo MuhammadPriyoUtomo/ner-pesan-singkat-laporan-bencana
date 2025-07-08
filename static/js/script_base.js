@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         // Bungkus tbody dengan div scrollable
                         let scrollDiv = document.createElement('div');
-                        scrollDiv.style.maxHeight = '300px';
+                        scrollDiv.style.maxHeight = '80vh';
                         scrollDiv.style.overflowY = 'auto';
                         scrollDiv.appendChild(tableBody);
                         searchResults.appendChild(scrollDiv);
