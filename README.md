@@ -1,5 +1,31 @@
-# ner-pesan-singkat-laporan-bencana
+---
 
+# 🧠 Informasi
+
+Dataset ini dikembangkan sebagai bagian dari tugas akhir (skripsi) dengan judul:
+
+**“PERBANDINGAN ALGORITMA JARO-WINKLER, BERT DAN SPACY PADA EKSTRAKSI PESAN SINGKAT WHATSAPP UNTUK MITIGASI BENCANA”**  
+Program Studi Informatika, Fakultas Teknologi Informasi dan Sains Data,  
+Universitas Sebelas Maret – Tahun 2025
+
+Penulis: **Muhammad Priyo Utomo** (NIM: M0518036)
+
+---
+
+# 🧠 Data Model, File Hasil Penelitian, File SQL
+
+- https://huggingface.co/utomomuhammadpriyo/ner-pesan-singkat-laporan-bencana/
+- https://huggingface.co/datasets/utomomuhammadpriyo/dataset-ner-pesan-singkat-laporan-bencana/
+
+Program ini dikembangkan sebagai bagian dari tugas akhir (skripsi) dengan judul:
+
+**“PERBANDINGAN ALGORITMA JARO-WINKLER, BERT DAN SPACY PADA EKSTRAKSI PESAN SINGKAT WHATSAPP UNTUK MITIGASI BENCANA”**  
+Program Studi Informatika, Fakultas Teknologi Informasi dan Sains Data,  
+Universitas Sebelas Maret – Tahun 2025
+
+Penulis: **Muhammad Priyo Utomo** (NIM: M0518036)
+
+---
 ## Konfigurasi Environment
 
 Buat file `.env` di root project dengan isi seperti berikut:
