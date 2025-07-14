@@ -1,5 +1,3 @@
----
-
 # 🧠 Informasi
 
 Dataset ini dikembangkan sebagai bagian dari tugas akhir (skripsi) dengan judul:
@@ -9,8 +7,6 @@ Program Studi Informatika, Fakultas Teknologi Informasi dan Sains Data,
 Universitas Sebelas Maret – Tahun 2025
 
 Penulis: **Muhammad Priyo Utomo** (NIM: M0518036)
-
----
 
 # 🧠 Data Model, File Hasil Penelitian, File SQL
 
