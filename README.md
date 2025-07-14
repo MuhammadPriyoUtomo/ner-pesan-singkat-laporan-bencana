@@ -13,6 +13,10 @@ Penulis: **Muhammad Priyo Utomo** (NIM: M0518036)
 - https://huggingface.co/utomomuhammadpriyo/ner-pesan-singkat-laporan-bencana/
 - https://huggingface.co/datasets/utomomuhammadpriyo/dataset-ner-pesan-singkat-laporan-bencana/
 
+# Petunjuk Installasi
+
+Petunjuk installasi dapat dilihat pada file "petunjuk.txt"
+
 ## Konfigurasi Environment
 
 Buat file `.env` di root project dengan isi seperti berikut:
