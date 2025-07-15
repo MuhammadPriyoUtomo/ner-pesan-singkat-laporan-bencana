@@ -16,7 +16,7 @@ Penulis: **Muhammad Priyo Utomo** (NIM: M0518036)
 # Petunjuk Installasi
 
 - Petunjuk installasi dapat dilihat pada file "petunjuk.txt"
-– Untuk melakukan scraping web, pastikan nomor default yang digunakan di WhatsApp sudah dipin.
+- Untuk melakukan scraping web, pastikan nomor default yang digunakan di WhatsApp sudah dipin.
 
 ## Konfigurasi Environment
 
