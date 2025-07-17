@@ -1,6 +1,6 @@
 # 🧠 Informasi
 
-Dataset ini dikembangkan sebagai bagian dari tugas akhir (skripsi) dengan judul:
+Program ini dikembangkan sebagai bagian dari tugas akhir (skripsi) dengan judul:
 
 **“PERBANDINGAN ALGORITMA JARO-WINKLER, BERT DAN SPACY PADA EKSTRAKSI PESAN SINGKAT WHATSAPP UNTUK MITIGASI BENCANA”**  
 Program Studi Informatika, Fakultas Teknologi Informasi dan Sains Data,  
