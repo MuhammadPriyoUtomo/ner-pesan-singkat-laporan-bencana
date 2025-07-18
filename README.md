@@ -8,6 +8,8 @@ Universitas Sebelas Maret – Tahun 2025
 
 Penulis: **Muhammad Priyo Utomo** (NIM: M0518036)
 
+Link Skripsi: https://digilib.uns.ac.id/dokumen/detail/125086/PERBANDINGAN-ALGORITMA-JARO-WINKLER-BERT-DAN-SPACY-PADA-EKSTRAKSI-PESAN-SINGKAT-WHATSAPP-UNTUK-MITIGASI-BENCANA
+
 # 🧠 Data Model, File Hasil Penelitian, File SQL
 
 - https://huggingface.co/utomomuhammadpriyo/ner-pesan-singkat-laporan-bencana/
